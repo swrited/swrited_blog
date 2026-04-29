@@ -1,0 +1,29 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('posts')).sort((a, b) =>
+  b.data.pubDate.getTime() - a.data.pubDate.getTime()
+);
+---
+
+<BaseLayout title="Blog | swrited" description="swrited 的全部文章列表。">
+  <section class="page-header">
+    <span class="eyebrow">ALL POSTS</span>
+    <h1>Blog</h1>
+    <p>记录 AI、工程、部署实践，以及一些值得留档的折腾过程。</p>
+  </section>
+
+  <section class="post-list">
+    {posts.map((post) => (
+      <a class="card post-card" href={`/blog/${post.slug}`}>
+        <div class="post-meta">
+          <span>{post.data.pubDate.toLocaleDateString('zh-CN')}</span>
+          <span>{post.data.tags.join(' · ')}</span>
+        </div>
+        <h2>{post.data.title}</h2>
+        <p>{post.data.summary}</p>
+      </a>
+    ))}
+  </section>
+</BaseLayout>
