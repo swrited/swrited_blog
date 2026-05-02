@@ -1,0 +1,16 @@
+---
+interface Props {
+  href?: string;
+  label?: string;
+}
+
+const {
+  href = '/',
+  label = '返回首页'
+} = Astro.props;
+---
+
+<a class="back-link" href={href}>
+  <span aria-hidden="true">←</span>
+  <span>{label}</span>
+</a>

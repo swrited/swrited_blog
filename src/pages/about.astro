@@ -1,8 +1,11 @@
 ---
+import BackLink from '../components/BackLink.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
 <BaseLayout title="About | swrited" description="关于 swrited。">
+  <BackLink href="/" label="返回首页" />
+
   <section class="page-header">
     <span class="eyebrow">ABOUT</span>
     <h1>你好，我是 swrited。</h1>

@@ -1,0 +1,71 @@
+<svg width="1400" height="760" viewBox="0 0 1400 760" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1400" y2="760" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#12080A"/>
+      <stop offset="0.5" stop-color="#1A0E12"/>
+      <stop offset="1" stop-color="#0A111B"/>
+    </linearGradient>
+    <pattern id="grid" width="36" height="36" patternUnits="userSpaceOnUse">
+      <path d="M36 0H0V36" stroke="#2A1E25" stroke-width="1" opacity="0.5"/>
+    </pattern>
+    <linearGradient id="threat" x1="120" y1="0" x2="1280" y2="0" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FB7185"/>
+      <stop offset="0.5" stop-color="#F97316"/>
+      <stop offset="1" stop-color="#FDE047"/>
+    </linearGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="10" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect width="1400" height="760" rx="32" fill="url(#bg)"/>
+  <rect width="1400" height="760" rx="32" fill="url(#grid)" opacity="0.28"/>
+  <rect x="40" y="40" width="1320" height="680" rx="24" stroke="#2A1E25" stroke-width="1.5"/>
+
+  <text x="72" y="96" fill="#FFF1F2" font-family="Inter, PingFang SC, sans-serif" font-size="44" font-weight="700">SSH 弱口令入侵时间线</text>
+  <text x="72" y="136" fill="#FECDD3" font-family="Inter, PingFang SC, sans-serif" font-size="22">从爆破命中到恶意程序启动，攻击链几乎是无缝衔接的</text>
+
+  <rect x="92" y="192" width="1216" height="392" rx="28" fill="#130C11" stroke="#33202A"/>
+  <path d="M150 390H1248" stroke="url(#threat)" stroke-width="8" stroke-linecap="round" filter="url(#glow)"/>
+
+  <g transform="translate(150 250)">
+    <path d="M0 0V122" stroke="#4B2730" stroke-width="2" stroke-dasharray="6 6"/>
+    <circle cx="0" cy="140" r="14" fill="#FB7185"/>
+    <text x="0" y="-8" fill="#FDA4AF" font-family="Inter, sans-serif" font-size="18">23:30</text>
+    <text x="0" y="196" fill="#FFF1F2" font-family="Inter, sans-serif" font-size="26" font-weight="600">开始爆破</text>
+    <text x="0" y="228" fill="#CBD5E1" font-family="Inter, sans-serif" font-size="20">高频尝试 ubuntu 密码</text>
+  </g>
+
+  <g transform="translate(430 216)">
+    <path d="M0 0V156" stroke="#5B2C22" stroke-width="2" stroke-dasharray="6 6"/>
+    <circle cx="0" cy="174" r="14" fill="#F97316"/>
+    <text x="0" y="-8" fill="#FDBA74" font-family="Inter, sans-serif" font-size="18">23:34:02</text>
+    <text x="0" y="230" fill="#FFF1F2" font-family="Inter, sans-serif" font-size="26" font-weight="600">登录成功</text>
+    <text x="0" y="262" fill="#CBD5E1" font-family="Inter, sans-serif" font-size="20">Accepted password</text>
+  </g>
+
+  <g transform="translate(730 234)">
+    <path d="M0 0V138" stroke="#6B4014" stroke-width="2" stroke-dasharray="6 6"/>
+    <circle cx="0" cy="156" r="14" fill="#F59E0B"/>
+    <text x="0" y="-8" fill="#FCD34D" font-family="Inter, sans-serif" font-size="18">+3s ~ +13s</text>
+    <text x="0" y="212" fill="#FFF1F2" font-family="Inter, sans-serif" font-size="26" font-weight="600">提权尝试 / 投放载荷</text>
+    <text x="0" y="244" fill="#CBD5E1" font-family="Inter, sans-serif" font-size="20">sudo whoami → wget/bash → binary start</text>
+  </g>
+
+  <g transform="translate(1070 250)">
+    <path d="M0 0V122" stroke="#7C5F12" stroke-width="2" stroke-dasharray="6 6"/>
+    <circle cx="0" cy="140" r="14" fill="#FDE047"/>
+    <text x="0" y="-8" fill="#FEF08A" font-family="Inter, sans-serif" font-size="18">随后</text>
+    <text x="0" y="196" fill="#FFF1F2" font-family="Inter, sans-serif" font-size="26" font-weight="600">持久化与远控</text>
+    <text x="0" y="228" fill="#CBD5E1" font-family="Inter, sans-serif" font-size="20">cron / profile.d / init.d / authorized_keys</text>
+  </g>
+
+  <g transform="translate(92 620)">
+    <rect width="1216" height="72" rx="18" fill="#0C131D" stroke="#293548"/>
+    <text x="24" y="46" fill="#CBD5E1" font-family="Inter, sans-serif" font-size="20">关键点：真正危险的不是“被扫到”，而是命中后的动作链非常完整，而且速度极快。</text>
+  </g>
+</svg>

@@ -1,4 +1,5 @@
 ---
+import BackLink from '../../components/BackLink.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection, render } from 'astro:content';
 
@@ -11,21 +12,100 @@ export async function getStaticPaths() {
 }
 
 const { post } = Astro.props;
-const { Content } = await render(post);
+const { Content, headings } = await render(post);
+const tocHeadings = headings.filter((heading) => heading.depth === 2 || heading.depth === 3);
+const hasToc = tocHeadings.length > 0;
 ---
 
 <BaseLayout title={`${post.data.title} | swrited`} description={post.data.summary}>
-  <article class="article card">
-    <div class="article-meta">
-      <span>{post.data.pubDate.toLocaleDateString('zh-CN')}</span>
-      <div class="tag-row">
-        {post.data.tags.map((tag) => <span class="tag">{tag}</span>)}
+  <div class="article-layout">
+    {hasToc && (
+      <aside class="toc-shell">
+        <nav class="toc card" aria-label="文章目录">
+          <p class="toc-title">目录</p>
+          <ol>
+            {tocHeadings.map((heading) => (
+              <li class={`toc-item toc-depth-${heading.depth}`}>
+                <a href={`#${heading.slug}`}>{heading.text}</a>
+              </li>
+            ))}
+          </ol>
+        </nav>
+      </aside>
+    )}
+
+    <article class="article card">
+      <BackLink href="/blog/" label="返回全部文章" />
+
+      <div class="article-meta">
+        <span>{post.data.pubDate.toLocaleDateString('zh-CN')}</span>
+        <div class="tag-row">
+          {post.data.tags.map((tag) => <span class="tag">{tag}</span>)}
+        </div>
       </div>
-    </div>
-    <h1>{post.data.title}</h1>
-    <p class="article-summary">{post.data.summary}</p>
-    <div class="article-body">
-      <Content />
-    </div>
-  </article>
+      <h1>{post.data.title}</h1>
+      <p class="article-summary">{post.data.summary}</p>
+
+      {hasToc && (
+        <details class="toc-mobile">
+          <summary>文章目录</summary>
+          <ol>
+            {tocHeadings.map((heading) => (
+              <li class={`toc-item toc-depth-${heading.depth}`}>
+                <a href={`#${heading.slug}`}>{heading.text}</a>
+              </li>
+            ))}
+          </ol>
+        </details>
+      )}
+
+      {post.data.cover && (
+        <img
+          class="article-cover"
+          src={post.data.cover}
+          alt={post.data.coverAlt ?? post.data.title}
+        />
+      )}
+      <div class="article-body">
+        <Content />
+      </div>
+    </article>
+  </div>
+
+  {hasToc && (
+    <script is:inline>
+      const articleBody = document.querySelector('.article-body');
+      const tocLinks = Array.from(document.querySelectorAll('.toc a'));
+      const mobileTocLinks = Array.from(document.querySelectorAll('.toc-mobile a'));
+      const headingNodes = Array.from(articleBody?.querySelectorAll('h2[id], h3[id]') ?? []);
+
+      if (headingNodes.length && tocLinks.length) {
+        const setActive = (id) => {
+          [...tocLinks, ...mobileTocLinks].forEach((link) => {
+            const isActive = link.getAttribute('href') === `#${id}`;
+            link.classList.toggle('active', isActive);
+          });
+        };
+
+        const observer = new IntersectionObserver(
+          (entries) => {
+            const visible = entries
+              .filter((entry) => entry.isIntersecting)
+              .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+
+            if (visible[0]?.target?.id) {
+              setActive(visible[0].target.id);
+            }
+          },
+          {
+            rootMargin: '0px 0px -70% 0px',
+            threshold: 0.1,
+          }
+        );
+
+        headingNodes.forEach((heading) => observer.observe(heading));
+        setActive(headingNodes[0].id);
+      }
+    </script>
+  )}
 </BaseLayout>

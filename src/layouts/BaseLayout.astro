@@ -10,6 +10,21 @@ const {
   title,
   description = 'swrited 的个人博客，记录 AI、工程、部署与日常折腾。'
 } = Astro.props;
+
+const normalizePath = (path: string) => {
+  if (path === '/') return '/';
+  return path.replace(/\/+$/, '');
+};
+
+const pathname = normalizePath(Astro.url.pathname);
+const navItems = [
+  { href: '/blog', label: 'Blog' },
+  { href: '/projects', label: 'Projects' },
+  { href: '/about', label: 'About' }
+].map((item) => ({
+  ...item,
+  normalizedHref: normalizePath(item.href)
+}));
 ---
 
 <!doctype html>
@@ -27,12 +42,26 @@ const {
   <body>
     <div class="site-shell">
       <header class="topbar">
-        <a class="brand" href="/">swrited</a>
-        <nav class="nav">
-          <a href="/blog">Blog</a>
-          <a href="/projects">Projects</a>
-          <a href="/about">About</a>
-        </nav>
+        <a class="brand" href="/">
+          <span class="brand-mark"></span>
+          <span class="brand-copy">
+            <span class="brand-name">swrited</span>
+            <span class="brand-subtitle">build · write · recover</span>
+          </span>
+        </a>
+        <div class="topbar-actions">
+          <nav class="nav">
+            {navItems.map((item) => (
+              <a href={item.href} class={pathname === item.normalizedHref || pathname.startsWith(`${item.normalizedHref}/`) ? 'nav-link is-active' : 'nav-link'}>
+                {item.label}
+              </a>
+            ))}
+          </nav>
+          <div class="topbar-links">
+            <a class="topbar-link" href="https://github.com/swrited" target="_blank" rel="noreferrer">GitHub</a>
+            <a class="topbar-link" href="mailto:swrited@hotmail.com">Mail</a>
+          </div>
+        </div>
       </header>
       <main>
         <slot />

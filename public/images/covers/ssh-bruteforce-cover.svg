@@ -1,0 +1,93 @@
+<svg width="1600" height="900" viewBox="0 0 1600 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1600" y2="900" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#12080A"/>
+      <stop offset="0.45" stop-color="#1A0E12"/>
+      <stop offset="1" stop-color="#0A111B"/>
+    </linearGradient>
+    <radialGradient id="roseGlow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1240 160) rotate(90) scale(240 360)">
+      <stop stop-color="#FB7185" stop-opacity="0.26"/>
+      <stop offset="1" stop-color="#FB7185" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="amberGlow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1330 250) rotate(90) scale(180 260)">
+      <stop stop-color="#F59E0B" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#F59E0B" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="threatLine" x1="220" y1="0" x2="1360" y2="0" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FB7185"/>
+      <stop offset="0.45" stop-color="#F97316"/>
+      <stop offset="1" stop-color="#FDE047"/>
+    </linearGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" stroke="#2A1E25" stroke-width="1" opacity="0.5"/>
+    </pattern>
+    <filter id="softGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="16" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="shadow" x="-20%" y="-20%" width="150%" height="150%">
+      <feDropShadow dx="0" dy="16" stdDeviation="24" flood-color="#020617" flood-opacity="0.42"/>
+    </filter>
+  </defs>
+
+  <rect width="1600" height="900" rx="36" fill="url(#bg)"/>
+  <rect width="1600" height="900" rx="36" fill="url(#grid)" opacity="0.28"/>
+  <rect x="56" y="56" width="1488" height="788" rx="28" stroke="#2A1E25" stroke-width="1.5" opacity="0.9"/>
+  <ellipse cx="1260" cy="160" rx="300" ry="210" fill="url(#roseGlow)"/>
+  <ellipse cx="1330" cy="250" rx="220" ry="170" fill="url(#amberGlow)"/>
+
+  <text x="104" y="122" fill="#FDA4AF" font-family="'Geist Mono', monospace" font-size="24" letter-spacing="4">SWRITED / INCIDENT RESPONSE / HOST TAKEOVER</text>
+  <text x="104" y="228" fill="#FFF1F2" font-family="'Geist', 'PingFang SC', sans-serif" font-size="74" font-weight="700">SSH 弱口令爆破入侵复盘</text>
+  <text x="104" y="300" fill="#FECDD3" font-family="'Geist', 'PingFang SC', sans-serif" font-size="34">13 秒，从撞门成功到落地恶意程序、持久化与远控建立</text>
+
+  <g transform="translate(104 356)">
+    <rect width="440" height="166" rx="24" fill="#140C11" stroke="#3B1B22"/>
+    <text x="30" y="54" fill="#FFF1F2" font-family="'Geist', sans-serif" font-size="30" font-weight="600">Attack Window</text>
+    <text x="30" y="94" fill="#FDBA74" font-family="'Geist Mono', monospace" font-size="40">00:13</text>
+    <text x="30" y="132" fill="#CBD5E1" font-family="'Geist', sans-serif" font-size="22">撞库命中后，后续动作几乎是自动化脚本串行执行。</text>
+    <rect x="286" y="36" width="124" height="94" rx="18" fill="#1B1118" stroke="#4B2730"/>
+    <path d="M320 74H376" stroke="#FB7185" stroke-width="4" stroke-linecap="round"/>
+    <path d="M320 96H390" stroke="#F97316" stroke-width="4" stroke-linecap="round"/>
+    <path d="M320 118H356" stroke="#FDE047" stroke-width="4" stroke-linecap="round"/>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="620" y="404" width="824" height="250" rx="28" fill="#130C11" stroke="#33202A"/>
+    <path d="M708 532H1360" stroke="url(#threatLine)" stroke-width="8" stroke-linecap="round" filter="url(#softGlow)"/>
+
+    <g transform="translate(700 430)">
+      <circle cx="0" cy="102" r="13" fill="#FB7185"/>
+      <path d="M0 0V80" stroke="#4B2730" stroke-width="2" stroke-dasharray="6 6"/>
+      <text x="0" y="-6" fill="#FDA4AF" font-family="'Geist Mono', monospace" font-size="18">23:30</text>
+      <text x="0" y="146" fill="#FFF1F2" font-family="'Geist', sans-serif" font-size="24" font-weight="600">爆破开始</text>
+      <text x="0" y="176" fill="#CBD5E1" font-family="'Geist', sans-serif" font-size="18">高频尝试 ubuntu 口令</text>
+    </g>
+
+    <g transform="translate(930 404)">
+      <circle cx="0" cy="128" r="13" fill="#F97316"/>
+      <path d="M0 0V106" stroke="#5B2C22" stroke-width="2" stroke-dasharray="6 6"/>
+      <text x="0" y="-6" fill="#FDBA74" font-family="'Geist Mono', monospace" font-size="18">23:34:02</text>
+      <text x="0" y="172" fill="#FFF1F2" font-family="'Geist', sans-serif" font-size="24" font-weight="600">登录成功</text>
+      <text x="0" y="202" fill="#CBD5E1" font-family="'Geist', sans-serif" font-size="18">Accepted password</text>
+    </g>
+
+    <g transform="translate(1160 420)">
+      <circle cx="0" cy="112" r="13" fill="#F59E0B"/>
+      <path d="M0 0V90" stroke="#6B4014" stroke-width="2" stroke-dasharray="6 6"/>
+      <text x="0" y="-6" fill="#FCD34D" font-family="'Geist Mono', monospace" font-size="18">+3s ~ +13s</text>
+      <text x="0" y="156" fill="#FFF1F2" font-family="'Geist', sans-serif" font-size="24" font-weight="600">落地载荷</text>
+      <text x="0" y="186" fill="#CBD5E1" font-family="'Geist', sans-serif" font-size="18">wget / bash / binary start</text>
+    </g>
+
+    <g transform="translate(1360 430)">
+      <circle cx="0" cy="102" r="13" fill="#FDE047"/>
+      <path d="M0 0V80" stroke="#7C5F12" stroke-width="2" stroke-dasharray="6 6"/>
+      <text x="0" y="-6" fill="#FEF08A" font-family="'Geist Mono', monospace" font-size="18">随后</text>
+      <text x="0" y="146" fill="#FFF1F2" font-family="'Geist', sans-serif" font-size="24" font-weight="600">持久化与远控</text>
+      <text x="0" y="176" fill="#CBD5E1" font-family="'Geist', sans-serif" font-size="18">cron / keys / profile.d</text>
+    </g>
+  </g>
+</svg>

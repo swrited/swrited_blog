@@ -8,13 +8,15 @@ tags:
   - CPA
   - Deployment
 featured: true
+cover: /images/covers/cpa-newapi-cover.svg
+coverAlt: CPA + NewAPI 链路封面图
 ---
-
-# 我是怎么把 CPA + NewAPI 串起来的：一次自己的模型网关实践记录
 
 这几天我把自己的一套模型调用链路重新整理了一遍，核心是把 **CLIProxyAPI（这里简称 CPA）** 和 **NewAPI** 串起来，再通过域名暴露出一个更稳定、可控、方便统一接入的入口。
 
 这篇文章记录一下这套结构是怎么搭起来的、每一层各自负责什么、踩过哪些坑，以及为什么我最后会保留这样的分层设计。
+
+![CPA + NewAPI 实际调用链路图](/images/diagrams/cpa-newapi-flow.svg)
 
 ---
 

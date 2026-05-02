@@ -1,28 +1,59 @@
 ---
+import BackLink from '../../components/BackLink.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
 
 const posts = (await getCollection('posts')).sort((a, b) =>
   b.data.pubDate.getTime() - a.data.pubDate.getTime()
 );
+
+const listPosts = posts.map((post) => ({
+  ...post,
+  previewTags: post.data.tags.slice(0, 3),
+  summaryPreview:
+    post.data.summary.length > 120 ? `${post.data.summary.slice(0, 120).trim()}…` : post.data.summary
+}));
 ---
 
 <BaseLayout title="Blog | swrited" description="swrited 的全部文章列表。">
+  <BackLink href="/" label="返回首页" />
+
   <section class="page-header">
     <span class="eyebrow">ALL POSTS</span>
     <h1>Blog</h1>
-    <p>记录 AI、工程、部署实践，以及一些值得留档的折腾过程。</p>
+    <p>记录 AI、工程、部署实践，以及那些值得留档的折腾过程与复盘。</p>
   </section>
 
   <section class="post-list">
-    {posts.map((post) => (
+    {listPosts.map((post) => (
       <a class="card post-card" href={`/blog/${post.slug}`}>
-        <div class="post-meta">
-          <span>{post.data.pubDate.toLocaleDateString('zh-CN')}</span>
-          <span>{post.data.tags.join(' · ')}</span>
+        {post.data.cover && (
+          <img
+            class="post-cover"
+            src={post.data.cover}
+            alt={post.data.coverAlt ?? post.data.title}
+            loading="lazy"
+          />
+        )}
+        <div class="post-card-body">
+          <div class="post-meta-row">
+            <div class="post-meta">
+              <span>{post.data.pubDate.toLocaleDateString('zh-CN')}</span>
+            </div>
+            {post.previewTags.length > 0 && (
+              <div class="tag-row post-tags">
+                {post.previewTags.map((tag) => (
+                  <span class="tag">{tag}</span>
+                ))}
+              </div>
+            )}
+          </div>
+          <h2>{post.data.title}</h2>
+          <p>{post.summaryPreview}</p>
+          <div class="post-card-footer">
+            <span class="text-link">继续阅读 →</span>
+          </div>
         </div>
-        <h2>{post.data.title}</h2>
-        <p>{post.data.summary}</p>
       </a>
     ))}
   </section>
