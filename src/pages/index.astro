@@ -58,18 +58,29 @@ const homePosts = posts.map((post) => ({
     </aside>
   </section>
 
-  <section class="home-strip card">
-    <div class="home-strip-item">
-      <span class="hero-label">SITE SIGNAL</span>
-      <p>持续更新的工作台与留档簿。</p>
+  <section class="home-strip-wrapper">
+    <div class="home-strip card">
+      <div class="home-strip-item">
+        <span class="hero-label">SITE SIGNAL</span>
+        <p>持续更新的工作台与留档簿。</p>
+      </div>
+      <div class="home-strip-item">
+        <span class="hero-label">RECENT THREADS</span>
+        <p>AI infra、agent orchestration、部署链路、事故排查。</p>
+      </div>
+      <div class="home-strip-item">
+        <span class="hero-label">DEFAULT MODE</span>
+        <p>先验证，再复盘，再将过程整理成文。</p>
+      </div>
     </div>
-    <div class="home-strip-item">
-      <span class="hero-label">RECENT THREADS</span>
-      <p>AI infra、agent orchestration、部署链路、事故排查。</p>
-    </div>
-    <div class="home-strip-item">
-      <span class="hero-label">DEFAULT MODE</span>
-      <p>先验证，再复盘，再将过程整理成文。</p>
+    <div id="inni-companion" class="inni-companion">
+      <img
+        id="inni-sprite"
+        src="/images/inni/idle.gif"
+        alt="inni"
+        class="inni-sprite"
+        style="cursor: grab;"
+      />
     </div>
   </section>
 
@@ -119,3 +130,131 @@ const homePosts = posts.map((post) => ({
     ))}
   </section>
 </BaseLayout>
+
+<script>
+  const inni = document.getElementById('inni-companion');
+  const sprite = document.getElementById('inni-sprite') as HTMLImageElement;
+  const wrapper = document.querySelector('.home-strip-wrapper') as HTMLElement;
+
+  if (inni && sprite && wrapper) {
+    let isDragging = false;
+    let startX = 0, startY = 0;
+    let currentX = 0, currentY = 0;
+    let isOnPage = false;
+    let idleTimeout: ReturnType<typeof setTimeout>;
+    let currentAnim = 'idle';
+
+    const anims: Record<string, string> = {
+      idle: '/images/inni/idle.gif',
+      waving: '/images/inni/waving.gif',
+      waiting: '/images/inni/waiting.gif',
+      review: '/images/inni/review.gif',
+    };
+
+    function setAnim(name: string) {
+      if (currentAnim === name) return;
+      currentAnim = name;
+      sprite.src = anims[name];
+      sprite.src = anims[name];
+    }
+
+    function savePos() {
+      sessionStorage.setItem('inni-x', String(currentX));
+      sessionStorage.setItem('inni-y', String(currentY));
+      sessionStorage.setItem('inni-onpage', String(isOnPage));
+    }
+
+    function loadPos() {
+      const sx = sessionStorage.getItem('inni-x');
+      const sy = sessionStorage.getItem('inni-y');
+      const sp = sessionStorage.getItem('inni-onpage');
+      if (sx !== null) currentX = parseFloat(sx);
+      if (sy !== null) currentY = parseFloat(sy);
+      if (sp === 'true') isOnPage = true;
+      applyPos(true);
+    }
+
+    function applyPos(initial = false) {
+      inni.style.position = 'fixed';
+      inni.style.left = currentX + 'px';
+      inni.style.top = currentY + 'px';
+      inni.style.zIndex = '9999';
+      inni.style.pointerEvents = 'none';
+      inni.style.transition = initial ? 'none' : 'left 0.08s ease, top 0.08s ease';
+    }
+
+    function resetIdle() {
+      clearTimeout(idleTimeout);
+      idleTimeout = setTimeout(() => setAnim('idle'), 3000);
+    }
+
+    function onMouseDown(e: MouseEvent | TouchEvent) {
+      isDragging = true;
+      const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+      const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+      startX = clientX - currentX;
+      startY = clientY - currentY;
+      sprite.style.cursor = 'grabbing';
+      setAnim('waving');
+      clearTimeout(idleTimeout);
+      e.preventDefault();
+    }
+
+    function onMouseMove(e: MouseEvent | TouchEvent) {
+      if (!isDragging) return;
+      const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+      const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+      currentX = clientX - startX;
+      currentY = clientY - startY;
+      applyPos();
+    }
+
+    function onMouseUp() {
+      if (!isDragging) return;
+      isDragging = false;
+      sprite.style.cursor = 'grab';
+      savePos();
+      resetIdle();
+    }
+
+    sprite.addEventListener('mousedown', onMouseDown);
+    sprite.addEventListener('touchstart', onMouseDown, { passive: false });
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('touchmove', onMouseMove, { passive: false });
+    document.addEventListener('mouseup', onMouseUp);
+    document.addEventListener('touchend', onMouseUp);
+
+    // scroll to bottom = inni on page
+    window.addEventListener('scroll', () => {
+      const scrolled = window.scrollY + window.innerHeight;
+      const bottom = document.body.scrollHeight;
+      if (scrolled >= bottom - 10) {
+        if (!isOnPage) {
+          isOnPage = true;
+          currentX = window.innerWidth - 130;
+          currentY = window.innerHeight - 160;
+          setAnim('review');
+          applyPos();
+          savePos();
+        }
+      } else {
+        if (isOnPage) {
+          isOnPage = false;
+          currentX = window.innerWidth - 130;
+          currentY = window.innerHeight - 160;
+          setAnim('waving');
+          applyPos();
+          savePos();
+        }
+      }
+    });
+
+    loadPos();
+    if (currentX === 0 && currentY === 0) {
+      currentX = window.innerWidth - 130;
+      currentY = window.innerHeight - 160;
+      applyPos(true);
+    }
+    resetIdle();
+  }
+</script>
