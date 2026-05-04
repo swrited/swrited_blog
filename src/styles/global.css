@@ -762,6 +762,11 @@ a.friend-link-card:hover {
   margin-top: 10px;
   font-family: 'Geist Mono', ui-monospace, monospace;
 }
+.hero-contact-label {
+  color: var(--soft);
+  font-size: 0.82rem;
+  margin-right: 2px;
+}
 .hero-contact-link {
   color: var(--soft);
   transition: color 0.2s;
