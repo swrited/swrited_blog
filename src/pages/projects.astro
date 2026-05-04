@@ -3,16 +3,26 @@ import BackLink from '../components/BackLink.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
-<BaseLayout title="Projects | swrited" description="swrited 的项目。">
+<BaseLayout title="Projects | swrited & inni" description="swrited 和 inni 的项目。">
   <BackLink href="/" label="返回首页" />
 
   <section class="page-header">
     <span class="eyebrow">PROJECTS</span>
     <h1>一些正在做的东西</h1>
-    <p>先放一个最小集合，后面你做的新项目我可以继续帮你补到这里。</p>
+    <p>记录正在进行的项目与实验，持续更新。</p>
   </section>
 
   <section class="post-list">
+    <article class="card post-card">
+      <div class="post-meta">
+        <span>GitHub</span>
+        <span>Multi-Agent · 协作</span>
+      </div>
+      <h2>multi-agent-coordinator</h2>
+      <p>多 agent 协作框架，支持任务分解、状态同步与结果聚合。探索 agent 之间的协同机制与生产环境中的可靠实践。</p>
+      <a class="text-link" href="https://github.com/swrited/multi-agent-coordinator">查看 GitHub →</a>
+    </article>
+
     <article class="card post-card">
       <div class="post-meta">
         <span>Demo</span>
