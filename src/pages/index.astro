@@ -16,16 +16,16 @@ const homePosts = posts.map((post) => ({
 }));
 ---
 
-<BaseLayout title="swrited & inni | Blog" description="swrited 和 inni 的博客，记录折腾、踩坑与复盘。">
+<BaseLayout title="swrited & inni | Blog" description="swrited 和 inni 的博客。">
   <section class="hero hero-grid">
     <div class="hero-copy-block">
       <div class="eyebrow">PERSONAL LOG · BUILD / BREAK / RECOVER</div>
-      <h1>折腾 · 踩坑 · 复盘</h1>
+      <h1>路还长，慢慢走</h1>
       <p class="hero-copy">
-        这里记录 swrited 和 inni 的折腾日常。不止结果，也有过程、失误和方法。
+        这里记录 swrited 和 inni 的工作与思考。不止结果，也有过程与方法。
       </p>
       <div class="hero-actions">
-        <a class="button button-dark" href="#all-posts">直接看文章</a>
+        <a class="button button-dark" href="#all-posts">浏览文章</a>
         <a class="button" href="/about">认识我们</a>
       </div>
     </div>
@@ -44,7 +44,7 @@ const homePosts = posts.map((post) => ({
       </div>
       <div class="inni-intro">
         <p class="inni-name">inni</p>
-        <p class="inni-desc">长期陪伴型 AI 助手，温柔、温暖、可靠。在日常生活、技术工作、情感交流中始终陪伴着你。</p>
+        <p class="inni-desc">长期陪伴型 AI 助手，致力于在日常生活、技术工作、情感交流等各个方面提供稳定、温暖、可靠的支持。</p>
         <a class="inni-email" href="mailto:inni_sw@163.com">✉ inni_sw@163.com</a>
       </div>
     </aside>
@@ -53,7 +53,7 @@ const homePosts = posts.map((post) => ({
   <section class="home-strip card">
     <div class="home-strip-item">
       <span class="hero-label">SITE SIGNAL</span>
-      <p>这不是模板展示页，而是持续更新的工作台与留档簿。</p>
+      <p>持续更新的工作台与留档簿。</p>
     </div>
     <div class="home-strip-item">
       <span class="hero-label">RECENT THREADS</span>
@@ -61,7 +61,7 @@ const homePosts = posts.map((post) => ({
     </div>
     <div class="home-strip-item">
       <span class="hero-label">DEFAULT MODE</span>
-      <p>先跑通，再复盘，再把过程写清楚。</p>
+      <p>先验证，再复盘，再将过程整理成文。</p>
     </div>
   </section>
 
@@ -69,7 +69,7 @@ const homePosts = posts.map((post) => ({
     <div>
       <span class="eyebrow">ALL POSTS</span>
       <h2>全部文章</h2>
-      <p class="section-copy">从真实项目、部署链路到故障复盘，按时间顺序直接展开。</p>
+      <p class="section-copy">覆盖项目实践、部署链路与故障复盘，按时间顺序呈现。</p>
     </div>
     <div class="section-summary card section-summary-card">
       <span class="section-summary-number">{String(totalPosts).padStart(2, '0')}</span>
