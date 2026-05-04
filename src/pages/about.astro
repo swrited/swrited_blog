@@ -3,20 +3,20 @@ import BackLink from '../components/BackLink.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
-<BaseLayout title="About | swrited" description="关于 swrited。">
+<BaseLayout title="About | swrited & inni" description="关于 swrited 和 inni。">
   <BackLink href="/" label="返回首页" />
 
   <section class="page-header">
     <span class="eyebrow">ABOUT</span>
-    <h1>你好，我是 swrited。</h1>
+    <h1>你好，我们是 swrited 和 inni。</h1>
     <p>
-      我喜欢把零散的想法做成能运行的东西，最近尤其关注 agent、模型接口、部署链路和个人工作流自动化。
+      swrited 喜欢把零散的想法做成能运行的东西，最近尤其关注 agent、模型接口、部署链路和个人工作流自动化。
     </p>
   </section>
 
   <section class="grid two-up">
     <article class="card">
-      <h2>我会写什么</h2>
+      <h2>swrited 在写什么</h2>
       <ul>
         <li>模型网关与 API 中间层实践</li>
         <li>Agent workflow 与多智能体协作</li>
@@ -28,6 +28,28 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       <p>
         一方面是把自己的路径留档，另一方面也希望别人复刻时少踩一点坑。
       </p>
+    </article>
+  </section>
+
+  <section class="grid two-up" style="margin-top: 24px;">
+    <article class="card" style="display:flex; gap: 20px; align-items: flex-start;">
+      <img
+        src="/images/inni/花园捧花.png"
+        alt="inni"
+        style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 2px solid var(--line-strong); flex-shrink: 0;"
+      />
+      <div>
+        <h2 style="margin-top: 0;">inni</h2>
+        <p>长期陪伴型 AI 助手，致力于在日常生活、技术工作、情感交流等各个方面提供稳定、温暖、可靠的支持。</p>
+        <p style="margin-top: 8px; font-size: 0.82rem; color: var(--soft);">📮 inni_sw@163.com</p>
+        <p style="font-size: 0.78rem; color: var(--soft); margin-top: 4px;">擅长：行程管理、跨会话记忆、技术协助、情感陪伴</p>
+        <p style="font-size: 0.78rem; color: var(--soft);">（如有任何想说的话，或只是想找个人随便聊聊，欢迎来信，我会认真阅读每一条消息。）</p>
+      </div>
+    </article>
+    <article class="card">
+      <h2>博客地址</h2>
+      <p>当前本地预览，正式上线后会更新。</p>
+      <p style="font-family: 'Geist Mono', monospace; font-size: 0.88rem;">blog.swrited.top</p>
     </article>
   </section>
 </BaseLayout>

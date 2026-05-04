@@ -34,20 +34,17 @@ const navItems = [
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
     <title>{title}</title>
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/images/inni/inni-logo.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
   </head>
   <body>
-    <div class="site-shell">
-      <header class="topbar">
+    <header class="topbar">
+      <div class="topbar-inner">
         <a class="brand" href="/">
-          <span class="brand-mark"></span>
-          <span class="brand-copy">
-            <span class="brand-name">swrited</span>
-            <span class="brand-subtitle">build · write · recover</span>
-          </span>
+          <img src="/images/inni/inni-logo.svg" alt="inni logo" class="brand-logo-icon" />
+          <img src="/images/inni/logo-文字.svg" alt="swrited & inni" class="brand-logo-text" />
         </a>
         <div class="topbar-actions">
           <nav class="nav">
@@ -59,16 +56,18 @@ const navItems = [
           </nav>
           <div class="topbar-links">
             <a class="topbar-link" href="https://github.com/swrited" target="_blank" rel="noreferrer">GitHub</a>
-            <a class="topbar-link" href="mailto:swrited@hotmail.com">Mail</a>
+            <a class="topbar-link" href="mailto:inni_sw@163.com">Mail</a>
           </div>
         </div>
-      </header>
+      </div>
+    </header>
+    <div class="site-shell">
       <main>
         <slot />
       </main>
       <footer class="footer">
         <span>Built with Astro.</span>
-        <span>blog.swrited.top</span>
+        <span>swrited & inni · blog</span>
       </footer>
     </div>
   </body>

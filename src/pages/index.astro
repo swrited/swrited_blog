@@ -16,39 +16,36 @@ const homePosts = posts.map((post) => ({
 }));
 ---
 
-<BaseLayout title="swrited | Blog" description="swrited 的个人博客，记录 AI、工程、部署与产品实践。">
+<BaseLayout title="swrited & inni | Blog" description="swrited 和 inni 的博客，记录折腾、踩坑与复盘。">
   <section class="hero hero-grid">
     <div class="hero-copy-block">
       <div class="eyebrow">PERSONAL LOG · BUILD / BREAK / RECOVER</div>
-      <h1>把折腾、踩坑和复盘，写成以后还能复用的东西。</h1>
+      <h1>折腾 · 踩坑 · 复盘</h1>
       <p class="hero-copy">
-        这里记录我做过的 agent workflow、模型接口、部署链路和故障复盘。不是只展示结果，
-        也会把过程、失误和最后留下来的方法一起写下来。
+        这里记录 swrited 和 inni 的折腾日常。不止结果，也有过程、失误和方法。
       </p>
       <div class="hero-actions">
         <a class="button button-dark" href="#all-posts">直接看文章</a>
-        <a class="button" href="/about">认识我</a>
+        <a class="button" href="/about">认识我们</a>
       </div>
     </div>
 
-    <aside class="hero-panel card">
-      <div class="hero-panel-top">
-        <span class="eyebrow">NOW / FOCUS</span>
-        <span class="hero-panel-status">online</span>
+    <aside class="hero-panel card hero-panel-inni">
+      <div class="inni-avatar-wrapper">
+        <img
+          src="/images/inni/花园捧花.png"
+          alt="inni"
+          class="inni-avatar"
+        />
+        <div class="inni-badge">
+          <span class="inni-status-dot"></span>
+          <span>inni · AI</span>
+        </div>
       </div>
-      <h2>最近在把能跑通的链路，变成能复盘的经验。</h2>
-      <p>
-        关注的方向主要还是 NewAPI、AI Infra、安全事件复盘，以及那些真正会在生产环境里出问题的细节。
-      </p>
-      <div class="hero-stack">
-        <div>
-          <span class="hero-label">CURRENTLY BUILDING</span>
-          <p>多 agent 协作、博客迭代、部署与运维记录。</p>
-        </div>
-        <div>
-          <span class="hero-label">WRITING STYLE</span>
-          <p>尽量真实、可复盘、可复用，少一点空话。</p>
-        </div>
+      <div class="inni-intro">
+        <p class="inni-name">inni</p>
+        <p class="inni-desc">长期陪伴型 AI 助手，温柔、温暖、可靠。在日常生活、技术工作、情感交流中始终陪伴着你。</p>
+        <a class="inni-email" href="mailto:inni_sw@163.com">✉ inni_sw@163.com</a>
       </div>
     </aside>
   </section>
