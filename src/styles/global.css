@@ -10,6 +10,7 @@
   --red: #ff5b4f;
   --card-shadow: rgba(0, 0, 0, 0.08) 0 0 0 1px, rgba(0, 0, 0, 0.04) 0 2px 2px, rgba(0, 0, 0, 0.04) 0 8px 8px -8px, #fafafa 0 0 0 1px;
   --bg-shift: 0px;
+  --scroll-progress: 0%;
 }
 
 * { box-sizing: border-box; }
@@ -71,6 +72,17 @@ p, li { color: var(--muted); }
   background: rgba(255,255,255,0.9);
   border-color: rgba(0, 0, 0, 0.1);
   box-shadow: rgba(0,0,0,0.06) 0 10px 24px -18px;
+}
+.scroll-progress {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: var(--scroll-progress);
+  height: 2px;
+  z-index: 30;
+  background: linear-gradient(90deg, rgba(10,114,239,0.75), rgba(222,29,141,0.7), rgba(255,183,80,0.65));
+  box-shadow: rgba(222,29,141,0.22) 0 0 18px;
+  pointer-events: none;
 }
 
 .topbar-inner {
@@ -308,6 +320,11 @@ main { padding: 32px 0 72px; }
   font-size: 0.92rem;
   font-weight: 500;
   background: rgba(255,255,255,0.94);
+  transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease;
+}
+.button:hover {
+  transform: translateY(-1px);
+  box-shadow: rgba(0,0,0,0.1) 0 0 0 1px, rgba(0,0,0,0.08) 0 10px 24px -18px;
 }
 .button-dark {
   background: var(--text);
@@ -391,7 +408,24 @@ main { padding: 32px 0 72px; }
   align-items: stretch;
   padding: 18px;
   background: rgba(255, 255, 255, 0.65);
+  position: relative;
+  overflow: hidden;
   transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease;
+}
+.post-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at var(--card-x, 50%) var(--card-y, 50%), rgba(255,255,255,0.58), transparent 32%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .18s ease;
+}
+.post-card:hover::before {
+  opacity: 1;
+}
+.post-card > * {
+  position: relative;
 }
 .post-card.is-revealable,
 .section-summary-card.is-revealable {
@@ -661,6 +695,9 @@ ul { padding-left: 1.2rem; }
   overflow: hidden;
   pointer-events: none;
 }
+.flower-petal-field.is-front {
+  z-index: 8;
+}
 .flower-petal {
   position: absolute;
   top: -32px;
@@ -675,6 +712,11 @@ ul { padding-left: 1.2rem; }
   opacity: var(--alpha);
   transform: translate3d(0, -40px, 0) rotate(var(--rotation));
   animation: petal-fall var(--duration) linear var(--delay) infinite;
+}
+.flower-petal.is-front {
+  filter: blur(0);
+  opacity: var(--alpha);
+  box-shadow: rgba(255, 183, 213, 0.18) 0 8px 18px -10px;
 }
 @keyframes petal-fall {
   0% {
@@ -776,6 +818,14 @@ ul { padding-left: 1.2rem; }
     transform: none;
   }
   .flower-petal-field {
+    display: none;
+  }
+  .scroll-progress {
+    display: none;
+  }
+}
+@media (hover: none), (pointer: coarse) {
+  .post-card::before {
     display: none;
   }
 }

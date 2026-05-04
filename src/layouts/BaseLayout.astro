@@ -72,6 +72,46 @@ const navItems = [
     </div>
     <script>
       const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+      const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
+
+      function setupScrollProgress() {
+        const progress = document.createElement('div');
+        progress.className = 'scroll-progress';
+        progress.setAttribute('aria-hidden', 'true');
+        document.body.appendChild(progress);
+
+        let ticking = false;
+        const sync = () => {
+          const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+          const percent = Math.min(100, Math.max(0, (window.scrollY / maxScroll) * 100));
+          document.documentElement.style.setProperty('--scroll-progress', `${percent}%`);
+          ticking = false;
+        };
+
+        const requestSync = () => {
+          if (ticking) return;
+          ticking = true;
+          window.requestAnimationFrame(sync);
+        };
+
+        sync();
+        window.addEventListener('scroll', requestSync, { passive: true });
+        window.addEventListener('resize', requestSync);
+      }
+
+      function setupCardHighlights() {
+        if (reduceMotion.matches || !finePointer.matches) return;
+
+        document.querySelectorAll('.post-card').forEach((card) => {
+          card.addEventListener('pointermove', (event) => {
+            const rect = card.getBoundingClientRect();
+            const x = ((event.clientX - rect.left) / rect.width) * 100;
+            const y = ((event.clientY - rect.top) / rect.height) * 100;
+            card.style.setProperty('--card-x', `${x.toFixed(1)}%`);
+            card.style.setProperty('--card-y', `${y.toFixed(1)}%`);
+          }, { passive: true });
+        });
+      }
 
       function setupTopbar() {
         const topbar = document.querySelector('.topbar');
@@ -137,31 +177,40 @@ const navItems = [
       function setupPetals() {
         if (reduceMotion.matches) return;
 
-        const layer = document.createElement('div');
-        const count = window.innerWidth < 720 ? 8 : 14;
+        const createLayer = (isFront = false) => {
+          const layer = document.createElement('div');
+          const count = isFront
+            ? (window.innerWidth < 720 ? 5 : 8)
+            : (window.innerWidth < 720 ? 14 : 24);
 
-        layer.className = 'flower-petal-field';
-        layer.setAttribute('aria-hidden', 'true');
+          layer.className = isFront ? 'flower-petal-field is-front' : 'flower-petal-field';
+          layer.setAttribute('aria-hidden', 'true');
 
-        for (let i = 0; i < count; i += 1) {
-          const petal = document.createElement('span');
-          const size = 8 + Math.random() * 9;
-          const drift = (Math.random() * 120 - 60).toFixed(1);
+          for (let i = 0; i < count; i += 1) {
+            const petal = document.createElement('span');
+            const size = isFront ? 16 + Math.random() * 14 : 7 + Math.random() * 9;
+            const drift = (Math.random() * (isFront ? 150 : 120) - (isFront ? 75 : 60)).toFixed(1);
 
-          petal.className = 'flower-petal';
-          petal.style.setProperty('--x', String(Math.random() * 100));
-          petal.style.setProperty('--size', `${size.toFixed(1)}px`);
-          petal.style.setProperty('--alpha', String(0.28 + Math.random() * 0.26));
-          petal.style.setProperty('--duration', `${14 + Math.random() * 12}s`);
-          petal.style.setProperty('--delay', `${Math.random() * -22}s`);
-          petal.style.setProperty('--drift', `${drift}px`);
-          petal.style.setProperty('--rotation', `${Math.random() * 360}deg`);
-          layer.appendChild(petal);
-        }
+            petal.className = isFront ? 'flower-petal is-front' : 'flower-petal';
+            petal.style.setProperty('--x', String(Math.random() * 100));
+            petal.style.setProperty('--size', `${size.toFixed(1)}px`);
+            petal.style.setProperty('--alpha', String(isFront ? 0.46 + Math.random() * 0.22 : 0.24 + Math.random() * 0.3));
+            petal.style.setProperty('--duration', `${isFront ? 10 + Math.random() * 8 : 13 + Math.random() * 13}s`);
+            petal.style.setProperty('--delay', `${Math.random() * -18}s`);
+            petal.style.setProperty('--drift', `${drift}px`);
+            petal.style.setProperty('--rotation', `${Math.random() * 360}deg`);
+            layer.appendChild(petal);
+          }
 
-        document.body.appendChild(layer);
+          document.body.appendChild(layer);
+        };
+
+        createLayer(false);
+        createLayer(true);
       }
 
+      setupScrollProgress();
+      setupCardHighlights();
       setupTopbar();
       setupBackgroundParallax();
       setupCardReveal();
