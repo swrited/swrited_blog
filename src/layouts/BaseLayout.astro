@@ -70,5 +70,102 @@ const navItems = [
         <span>swrited & inni · blog</span>
       </footer>
     </div>
+    <script>
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+      function setupTopbar() {
+        const topbar = document.querySelector('.topbar');
+        if (!topbar) return;
+
+        const sync = () => {
+          topbar.classList.toggle('is-scrolled', window.scrollY > 18);
+        };
+
+        sync();
+        window.addEventListener('scroll', sync, { passive: true });
+      }
+
+      function setupBackgroundParallax() {
+        if (reduceMotion.matches) return;
+
+        let ticking = false;
+        const sync = () => {
+          const shift = Math.max(-42, Math.min(0, window.scrollY * -0.035));
+          document.documentElement.style.setProperty('--bg-shift', `${shift}px`);
+          ticking = false;
+        };
+
+        const requestSync = () => {
+          if (ticking) return;
+          ticking = true;
+          window.requestAnimationFrame(sync);
+        };
+
+        sync();
+        window.addEventListener('scroll', requestSync, { passive: true });
+      }
+
+      function setupCardReveal() {
+        if (reduceMotion.matches) return;
+
+        const revealItems = document.querySelectorAll('.post-card, .section-summary-card');
+        if (!revealItems.length) return;
+
+        revealItems.forEach((item) => item.classList.add('is-revealable'));
+
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          });
+        }, {
+          rootMargin: '0px 0px -10% 0px',
+          threshold: 0.14
+        });
+
+        revealItems.forEach((item) => observer.observe(item));
+
+        window.setTimeout(() => {
+          revealItems.forEach((item) => {
+            item.classList.add('is-visible');
+            observer.unobserve(item);
+          });
+        }, 900);
+      }
+
+      function setupPetals() {
+        if (reduceMotion.matches) return;
+
+        const layer = document.createElement('div');
+        const count = window.innerWidth < 720 ? 8 : 14;
+
+        layer.className = 'flower-petal-field';
+        layer.setAttribute('aria-hidden', 'true');
+
+        for (let i = 0; i < count; i += 1) {
+          const petal = document.createElement('span');
+          const size = 8 + Math.random() * 9;
+          const drift = (Math.random() * 120 - 60).toFixed(1);
+
+          petal.className = 'flower-petal';
+          petal.style.setProperty('--x', String(Math.random() * 100));
+          petal.style.setProperty('--size', `${size.toFixed(1)}px`);
+          petal.style.setProperty('--alpha', String(0.28 + Math.random() * 0.26));
+          petal.style.setProperty('--duration', `${14 + Math.random() * 12}s`);
+          petal.style.setProperty('--delay', `${Math.random() * -22}s`);
+          petal.style.setProperty('--drift', `${drift}px`);
+          petal.style.setProperty('--rotation', `${Math.random() * 360}deg`);
+          layer.appendChild(petal);
+        }
+
+        document.body.appendChild(layer);
+      }
+
+      setupTopbar();
+      setupBackgroundParallax();
+      setupCardReveal();
+      setupPetals();
+    </script>
   </body>
 </html>
