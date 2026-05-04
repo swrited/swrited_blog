@@ -746,3 +746,9 @@ ul { padding-left: 1.2rem; }
 .inni-email:hover {
   opacity: 0.7;
 }
+
+/* === friend link === */
+a.friend-link-card:hover {
+  border-color: var(--blue);
+  transform: translateY(-1px);
+}
