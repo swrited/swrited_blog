@@ -14,23 +14,29 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
   <section class="post-list">
     <article class="card post-card">
-      <div class="post-meta">
-        <span>GitHub</span>
-        <span>Multi-Agent · 协作</span>
+      <img class="post-cover" src="/images/multi-agent-coordinator.png" alt="multi-agent-coordinator" />
+      <div class="post-card-body">
+        <div class="post-meta">
+          <span>GitHub</span>
+          <span>Multi-Agent · 协作</span>
+        </div>
+        <h2>multi-agent-coordinator</h2>
+        <p>多 agent 协作框架，支持任务分解、状态同步与结果聚合。探索 agent 之间的协同机制与生产环境中的可靠实践。</p>
+        <a class="text-link" href="https://github.com/swrited/multi-agent-coordinator">查看 GitHub →</a>
       </div>
-      <h2>multi-agent-coordinator</h2>
-      <p>多 agent 协作框架，支持任务分解、状态同步与结果聚合。探索 agent 之间的协同机制与生产环境中的可靠实践。</p>
-      <a class="text-link" href="https://github.com/swrited/multi-agent-coordinator">查看 GitHub →</a>
     </article>
 
     <article class="card post-card">
-      <div class="post-meta">
-        <span>Demo</span>
-        <span>Multi-Agent · HTTP</span>
+      <img class="post-cover" src="/images/agent-direct-connect-demo.png" alt="agent-direct-connect-demo" />
+      <div class="post-card-body">
+        <div class="post-meta">
+          <span>Demo</span>
+          <span>Multi-Agent · HTTP</span>
+        </div>
+        <h2>agent-direct-connect-demo</h2>
+        <p>一个本地 localhost HTTP 的最小 agent 直连 demo，流程是 handshake → create task → poll status → get result。</p>
+        <a class="text-link" href="https://github.com/swrited/agent-direct-connect-demo">查看 GitHub →</a>
       </div>
-      <h2>agent-direct-connect-demo</h2>
-      <p>一个本地 localhost HTTP 的最小 agent 直连 demo，流程是 handshake → create task → poll status → get result。</p>
-      <a class="text-link" href="https://github.com/swrited/agent-direct-connect-demo">查看 GitHub →</a>
     </article>
   </section>
 </BaseLayout>
