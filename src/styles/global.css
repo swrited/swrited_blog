@@ -752,3 +752,23 @@ a.friend-link-card:hover {
   border-color: var(--blue);
   transform: translateY(-1px);
 }
+
+/* === hero contacts === */
+.hero-contacts {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  margin-top: 10px;
+  font-family: 'Geist Mono', ui-monospace, monospace;
+}
+.hero-contact-link {
+  color: var(--soft);
+  transition: color 0.2s;
+}
+.hero-contact-link:hover {
+  color: var(--blue);
+}
+.hero-contact-sep {
+  color: var(--line-strong);
+}
