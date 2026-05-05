@@ -32,7 +32,7 @@ body::after {
   pointer-events: none;
 }
 body::before {
-  background-image: url('/images/flower-field-bg-clear.png');
+  background-image: url('/images/flower-field-bg-clear.webp');
   background-size: cover;
   background-position: center bottom;
   background-repeat: no-repeat;
