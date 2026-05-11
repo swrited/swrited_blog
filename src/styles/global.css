@@ -483,8 +483,15 @@ main { padding: 32px 0 72px; }
   padding: 10px;
 }
 .article-cover {
+  cursor: zoom-in;
   aspect-ratio: 16 / 9;
   margin: 0 0 28px;
+}
+
+/* medium-zoom: ensure overlay and zoomed image are above everything */
+.medium-zoom-overlay,
+.medium-zoom-image--opened {
+  z-index: 9999;
 }
 .post-card:hover {
   transform: translateY(-3px);
@@ -605,8 +612,9 @@ main { padding: 32px 0 72px; }
   color: var(--soft);
 }
 .article-body img {
+  cursor: zoom-in;
   display: block;
-  width: 100%;
+  max-width: 100%;
   margin: 28px 0;
   border-radius: 16px;
   border: 1px solid var(--line-strong);
@@ -655,6 +663,7 @@ main { padding: 32px 0 72px; }
   display: none;
 }
 .article-body img {
+  cursor: zoom-in;
   max-width: 100%;
   height: auto;
   border-radius: 10px;
@@ -686,6 +695,10 @@ main { padding: 32px 0 72px; }
   font-size: 0.88rem;
   border-top: 1px solid var(--line-strong);
   margin-top: 24px;
+}
+.visit-counter {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
 }
 ul { padding-left: 1.2rem; }
 .flower-petal-field {

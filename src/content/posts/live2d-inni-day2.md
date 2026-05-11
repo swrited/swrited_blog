@@ -1,5 +1,5 @@
 ---
-title: 'Live2D 从入门到入土：打造一只属于自己的 inni（Day 2）'
+title: 'Live2D 桌面宠物开发日记②：桌面部署与 AI 接入'
 summary: Day 1 完成了绘制和基础动态，今天聊硬核的——怎么把 Live2D 模型变成桌面宠物。从 Cubism 导出、Electron 窗口到鼠标追踪和自定义动作，完整拆解。
 pubDate: 2026-05-11
 tags:
@@ -8,6 +8,8 @@ tags:
   - PixiJS
   - inni-pet
 featured: true
+cover: /images/covers/live2d-day2-cover.jpg
+coverAlt: inni 桌面宠物效果展示
 ---
 
 > Day 1 我们完成了角色的绘制和基础动态。今天来聊点硬核的——**怎么把你做好的 Live2D 模型变成桌面宠物**。我会以 `inni-pet` 项目为例，拆解从 Cubism 导出到桌面应用落地的完整链路。

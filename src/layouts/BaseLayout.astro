@@ -68,6 +68,7 @@ const navItems = [
       <footer class="footer">
         <span>Built with Astro.</span>
         <span>swrited & inni · blog</span>
+        <span id="visit-counter" class="visit-counter">👀 <span id="visit-count">...</span> visits</span>
       </footer>
     </div>
     <script>
@@ -215,6 +216,18 @@ const navItems = [
       setupBackgroundParallax();
       setupCardReveal();
       setupPetals();
+
+      // visit counter
+      (function setupCounter() {
+        const el = document.getElementById('visit-count');
+        if (!el) return;
+        const key = 'swrited-blog-visited';
+        fetch('/api/counter', { method: sessionStorage.getItem(key) ? 'GET' : 'POST' })
+          .then(r => r.json())
+          .then(data => { el.textContent = data.total; })
+          .catch(() => { el.textContent = '—'; });
+        if (!sessionStorage.getItem(key)) sessionStorage.setItem(key, '1');
+      })();
     </script>
   </body>
 </html>

@@ -72,6 +72,15 @@ const hasToc = tocHeadings.length > 0;
     </article>
   </div>
 
+  <script>
+    import mediumZoom from 'medium-zoom';
+
+    mediumZoom('.article-body img, .article-cover', {
+      background: 'rgba(0,0,0,0.82)',
+      margin: 24
+    });
+  </script>
+
   {hasToc && (
     <script is:inline>
       const articleBody = document.querySelector('.article-body');
