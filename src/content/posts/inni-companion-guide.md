@@ -8,6 +8,7 @@ tags:
   - 交互设计
   - GIF
 cover: /images/covers/inni-companion-cover.png
+coverAlt: Inni Companion 桌面精灵封面
 ---
 
 ## 功能概述
