@@ -1,171 +1,123 @@
 ---
-title: 'Inni Companion 桌面精灵使用说明'
-summary: '记录 Inni Companion 组件的技术实现，包括 spritesheet 结构、动画触发逻辑、拖动交互，以及如何将其添加到任意网页。'
+title: 'Inni Pet 部署指南：将 Live2D 桌面宠物搬上博客'
+summary: '记录 Inni Pet 的部署过程，基于 Electron + PixiJS + Live2D Cubism，将 AI 伴侣 inni 变成可交互的网页组件，支持鼠标追踪、动作触发与 AI 对话。'
 pubDate: '2026-05-12'
 tags:
   - Inni
-  - 前端
-  - 交互设计
-  - GIF
+  - Live2D
+  - Electron
+  - PixiJS
+  - AI
 cover: /images/covers/inni-companion-cover.png
-coverAlt: Inni Companion 桌面精灵封面
+coverAlt: Inni Pet 部署封面
 ---
 
-## 功能概述
+## 项目概述
 
-Inni Companion 是一只可拖动、可交互的 AI 助手小精灵，默认显示在页面右下角。支持 4 种动画状态：待机、挥手、等待、回顾。
+Inni Pet 是一个基于 **Electron + PixiJS + Live2D Cubism** 的桌面宠物项目，模型使用仓库内的 `inni_model/inni_2_eye.model3.json`，支持以下功能：
 
-## 目录结构
+- Live2D 桌面宠物窗口
+- 鼠标追踪视线
+- 点击模型随机触发动作
+- 终端输入动作命令
+- 内置聊天桥接服务
+- 支持 MiniMax、OpenClaw、OpenAI-compatible gateway
+- MiniMax TTS 接口
 
-```
-public/images/inni/
-├── idle.gif      # 待机动画（默认）
-├── waving.gif    # 挥手动画（拖动时触发）
-├── waiting.gif   # 等待动画（滚动时触发）
-├── review.gif    # 回顾动画（滚动到底部时触发）
-├── inni-logo.svg # 网站 logo
-├── logo-文字.svg  # 花体文字 logo
-└── swrited.png   # swrited 头像
-```
+## 快速启动
 
-> **帧数要求**：每个动作从同一张 spritesheet 中切分，排列方式为 **8列 × 9行**，每行动画数不同：
-> - `idle` → 第 0 行，6 帧
-> - `waving` → 第 3 行，4 帧
-> - `waiting` → 第 6 行，6 帧
-> - `review` → 第 8 行，6 帧
+### 安装依赖
 
-## 添加到网页
-
-### 1. HTML 部分
-
-在页面底部添加一个固定定位的容器：
-
-```html
-<div id="inni-companion">
-  <img
-    id="inni-sprite"
-    src="/images/inni/idle.gif"
-    alt="inni"
-    style="cursor: grab; width: 80px; height: auto;"
-  />
-</div>
+```bash
+git clone https://github.com/swrited/inni-pet.git
+cd inni-pet
+npm install
 ```
 
-### 2. CSS 样式
+### 启动宠物
 
-```css
-.inni-companion {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 9999;
-  pointer-events: none;
-  transition: right 0.1s ease, bottom 0.1s ease;
-}
-
-.inni-sprite {
-  width: 80px;
-  height: auto;
-  pointer-events: all;
-  cursor: grab;
-  image-rendering: -webkit-optimize-contrast;
-}
-
-.inni-sprite:active {
-  cursor: grabbing;
-}
+```bash
+npm start
 ```
 
-### 3. JavaScript 交互逻辑
+`npm start` 会同时启动：
+- Electron 桌宠窗口
+- 本地 bridge server：`http://127.0.0.1:1234`
+- 兼容 Ollama 端口：`http://127.0.0.1:11434`
+
+> 如果提示 `electron: command not found`，先执行 `npm install`
+
+## Gateway 选择
+
+### MiniMax（默认）
+
+```bash
+MINIMAX_API_KEY=你的key npm start
+```
+
+### OpenClaw / QClaw
+
+先保证 QClaw/OpenClaw 本地 gateway 运行，启用 `/v1/chat/completions`：
+
+```bash
+npm run start:openclaw
+```
+
+默认读取 `~/.qclaw/openclaw.json`，调用地址：
+
+```
+http://127.0.0.1:28789/v1/chat/completions
+```
+
+## Live2D 模型结构
+
+```
+inni_model/
+├── inni_2_eye.1024/      # 纹理贴图
+├── inni_2_eye.cdi3.json   # 动作数据
+├── inni_2_eye.moc3        # 模型文件
+└── inni_2_eye.model3.json # 模型配置
+```
+
+## 网页端集成（原理）
+
+将 Live2D 嵌入网页的核心流程：
 
 ```javascript
-const inni = document.getElementById('inni-companion');
-const sprite = document.getElementById('inni-sprite');
+// 加载 Live2D Cubism Core
+import * as PIXI from 'pixi.js';
+import { Live2DModel } from 'pixi-live2d-display';
 
-const anims = {
-  idle: '/images/inni/idle.gif',
-  waving: '/images/inni/waving.gif',
-  waiting: '/images/inni/waiting.gif',
-  review: '/images/inni/review.gif',
-};
-
-let isDragging = false;
-let currentX = window.innerWidth - 130;
-let currentY = window.innerHeight - 160;
-let idleTimer;
-
-inni.style.cssText = `position:fixed;left:${currentX}px;top:${currentY}px;z-index:9999;`;
-
-sprite.addEventListener('mousedown', (e) => {
-  isDragging = true;
-  sprite.src = anims.waving;
-  clearTimeout(idleTimer);
-  e.preventDefault();
+// 初始化 PIXI 应用
+const app = new PIXI.Application({
+  view: document.getElementById('canvas'),
+  width: 400,
+  height: 600,
+  transparent: true,
 });
 
-document.addEventListener('mousemove', (e) => {
-  if (!isDragging) return;
-  currentX = e.clientX - sprite.offsetWidth / 2;
-  currentY = e.clientY - sprite.offsetHeight / 2;
-  inni.style.left = currentX + 'px';
-  inni.style.top = currentY + 'px';
-});
+// 加载模型
+const model = await Live2DModel.from('/path/to/inni_2_eye.model3.json');
+app.stage.addChild(model);
 
-document.addEventListener('mouseup', () => {
-  if (!isDragging) return;
-  isDragging = false;
-  idleTimer = setTimeout(() => sprite.src = anims.idle, 3000);
-});
-
-window.addEventListener('scroll', () => {
-  const scrolled = window.scrollY + window.innerHeight;
-  if (scrolled >= document.body.scrollHeight - 10) {
-    sprite.src = anims.review;
-  } else {
-    sprite.src = anims.waiting;
-  }
+// 鼠标追踪
+app.view.addEventListener('mousemove', (e) => {
+  model.internal.motionManager.modelCore.setRandomExpression();
 });
 ```
 
-## 动画切换规则
+## 相关资源
 
-| 状态 | 触发条件 | 动画 |
-|------|---------|------|
-| `idle` | 默认 / 停止交互 3 秒后 | `idle.gif` |
-| `waving` | 鼠标拖动 inni 时 | `waving.gif` |
-| `waiting` | 页面滚动中（非底部） | `waiting.gif` |
-| `review` | 滚动到页面最底部 | `review.gif` |
+- 模型仓库：[swrited/inni-pet](https://github.com/swrited/inni-pet)
+- Live2D Cubism：[Live2D Cubism Core](https://www.live2d.com/)
+- PixiJS：[pixi-live2d-display](https://github.com/guansss/pixi-live2d-display)
 
-## 位置持久化
+## 附录：文件说明
 
-使用 sessionStorage 记住用户上次的位置：
-
-```javascript
-// 读取
-const savedX = sessionStorage.getItem('inni-x');
-const savedY = sessionStorage.getItem('inni-y');
-if (savedX && savedY) {
-  currentX = parseFloat(savedX);
-  currentY = parseFloat(savedY);
-}
-
-// 保存
-window.addEventListener('mouseup', () => {
-  sessionStorage.setItem('inni-x', currentX);
-  sessionStorage.setItem('inni-y', currentY);
-});
-```
-
-## 注意事项
-
-1. **GIF 透明背景**：导出时保留透明通道（RGBA 模式），不要加白色底
-2. **Spritesheet 排列**：精灵图必须严格按照 8×9 网格排列
-3. **帧尺寸**：每格尺寸 = 原图宽÷8 × 高÷9
-4. **移动端适配**：将 `mousedown/mousemove/mouseup` 替换为 `touchstart/touchmove/touchend`
-5. **z-index**：确保层级足够高（9999），不被其他元素遮挡
-
-## 相关文件
-
-- 组件代码：`src/pages/index.astro`（底部 script 区块）
-- 样式：`src/styles/global.css` 中的 `.inni-companion`、`.inni-sprite`
-- 图片目录：`public/images/inni/`
+| 文件 | 说明 |
+|------|------|
+| `bundle-live2d.js` | Live2D 核心包 |
+| `pixi.min.js` | PixiJS 渲染引擎 |
+| `live2dcubismcore.min.js` | Cubism 核心 |
+| `bridge-server.js` | 与 AI gateway 通信的桥接服务 |
+| `local-live2d.js` | 独立运行的网页版 |
