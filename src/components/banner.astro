@@ -18,8 +18,18 @@ const getImageSources = () => {
     const toArray = (src: any) => [src || []].flat();
     const { src } = config;
     const isObj = src && typeof src === "object" && !Array.isArray(src);
-    const desktop = toArray(isObj ? (src as any).desktop : src);
-    const mobile = toArray(isObj ? (src as any).mobile : src);
+    const desktopAll = toArray(isObj ? (src as any).desktop : src);
+    const mobileAll = toArray(isObj ? (src as any).mobile : src);
+
+    const pickByDate = (arr: string[]) => {
+        if (arr.length <= 1) return arr;
+        const idx = new Date().getDate() % arr.length;
+        return [arr[idx]];
+    };
+
+    const desktop = pickByDate(desktopAll);
+    const mobile = pickByDate(mobileAll);
+
     return {
         desktop: desktop.length > 0 ? desktop : mobile,
         mobile: mobile.length > 0 ? mobile : desktop,
