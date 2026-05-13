@@ -1,0 +1,82 @@
+<svg width="1400" height="760" viewBox="0 0 1400 760" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1400" y2="760" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#030712"/>
+      <stop offset="0.5" stop-color="#071426"/>
+      <stop offset="1" stop-color="#140A20"/>
+    </linearGradient>
+    <pattern id="grid" width="36" height="36" patternUnits="userSpaceOnUse">
+      <path d="M36 0H0V36" stroke="#1E293B" stroke-width="1" opacity="0.55"/>
+    </pattern>
+    <linearGradient id="flow" x1="300" y1="0" x2="1140" y2="0" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#7DD3FC"/>
+      <stop offset="0.5" stop-color="#60A5FA"/>
+      <stop offset="1" stop-color="#F472B6"/>
+    </linearGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="10" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <marker id="arrow" markerWidth="18" markerHeight="18" refX="12" refY="9" orient="auto">
+      <path d="M0 0L18 9L0 18V0Z" fill="#F472B6"/>
+    </marker>
+  </defs>
+
+  <rect width="1400" height="760" rx="32" fill="url(#bg)"/>
+  <rect width="1400" height="760" rx="32" fill="url(#grid)" opacity="0.28"/>
+  <rect x="40" y="40" width="1320" height="680" rx="24" stroke="#1E293B" stroke-width="1.5"/>
+
+  <text x="72" y="96" fill="#F8FAFC" font-family="Inter, PingFang SC, sans-serif" font-size="44" font-weight="700">CPA + NewAPI 调用链路</text>
+  <text x="72" y="136" fill="#94A3B8" font-family="Inter, PingFang SC, sans-serif" font-size="22">入口层、代理层、上游层分离后，请求更容易排障和替换</text>
+
+  <path d="M310 344H420" stroke="url(#flow)" stroke-width="8" stroke-linecap="round" marker-end="url(#arrow)" filter="url(#glow)"/>
+  <path d="M620 344H730" stroke="url(#flow)" stroke-width="8" stroke-linecap="round" marker-end="url(#arrow)" filter="url(#glow)"/>
+  <path d="M930 344H1040" stroke="url(#flow)" stroke-width="8" stroke-linecap="round" marker-end="url(#arrow)" filter="url(#glow)"/>
+
+  <g transform="translate(92 252)">
+    <rect width="218" height="182" rx="24" fill="#0F1B31" fill-opacity="0.76" stroke="#334155" stroke-width="1.5"/>
+    <circle cx="30" cy="34" r="7" fill="#7DD3FC"/>
+    <text x="52" y="40" fill="#7DD3FC" font-family="Inter, sans-serif" font-size="20">Client</text>
+    <text x="24" y="86" fill="#F8FAFC" font-family="Inter, sans-serif" font-size="34" font-weight="700">Hermes</text>
+    <text x="24" y="120" fill="#CBD5E1" font-family="Inter, sans-serif" font-size="20">请求发起</text>
+    <text x="24" y="150" fill="#94A3B8" font-family="Inter, sans-serif" font-size="18">tool call / auth header / model choice</text>
+  </g>
+
+  <g transform="translate(402 220)">
+    <rect width="218" height="244" rx="24" fill="#0B2233" fill-opacity="0.8" stroke="#38BDF8" stroke-width="1.5"/>
+    <circle cx="30" cy="34" r="7" fill="#38BDF8"/>
+    <text x="52" y="40" fill="#7DD3FC" font-family="Inter, sans-serif" font-size="20">Entry Layer</text>
+    <text x="24" y="86" fill="#F8FAFC" font-family="Inter, sans-serif" font-size="34" font-weight="700">NewAPI</text>
+    <text x="24" y="126" fill="#BAE6FD" font-family="Inter, sans-serif" font-size="18">• 统一对外 OpenAI 风格接口</text>
+    <text x="24" y="156" fill="#BAE6FD" font-family="Inter, sans-serif" font-size="18">• 模型名映射</text>
+    <text x="24" y="186" fill="#BAE6FD" font-family="Inter, sans-serif" font-size="18">• 入口认证与请求组织</text>
+  </g>
+
+  <g transform="translate(712 220)">
+    <rect width="218" height="244" rx="24" fill="#0F1F1D" fill-opacity="0.82" stroke="#34D399" stroke-width="1.5"/>
+    <circle cx="30" cy="34" r="7" fill="#34D399"/>
+    <text x="52" y="40" fill="#86EFAC" font-family="Inter, sans-serif" font-size="20">Proxy Layer</text>
+    <text x="24" y="86" fill="#F8FAFC" font-family="Inter, sans-serif" font-size="34" font-weight="700">CPA</text>
+    <text x="24" y="126" fill="#BBF7D0" font-family="Inter, sans-serif" font-size="18">• 真实上游转发</text>
+    <text x="24" y="156" fill="#BBF7D0" font-family="Inter, sans-serif" font-size="18">• 链路重试与路由</text>
+    <text x="24" y="186" fill="#BBF7D0" font-family="Inter, sans-serif" font-size="18">• 底层日志与排障入口</text>
+  </g>
+
+  <g transform="translate(1022 252)">
+    <rect width="286" height="182" rx="24" fill="#251624" fill-opacity="0.8" stroke="#F472B6" stroke-width="1.5"/>
+    <circle cx="30" cy="34" r="7" fill="#F472B6"/>
+    <text x="52" y="40" fill="#F9A8D4" font-family="Inter, sans-serif" font-size="20">Upstream Layer</text>
+    <text x="24" y="86" fill="#F8FAFC" font-family="Inter, sans-serif" font-size="34" font-weight="700">Model APIs</text>
+    <text x="24" y="120" fill="#FBCFE8" font-family="Inter, sans-serif" font-size="18">OpenAI-compatible / vendor-native endpoints</text>
+    <text x="24" y="150" fill="#FBCFE8" font-family="Inter, sans-serif" font-size="18">providers can change without touching the client</text>
+  </g>
+
+  <g transform="translate(92 532)">
+    <rect width="1216" height="120" rx="22" fill="#0A1322" stroke="#203044"/>
+    <text x="26" y="46" fill="#E2E8F0" font-family="Inter, sans-serif" font-size="26" font-weight="600">Why this split matters</text>
+    <text x="26" y="82" fill="#94A3B8" font-family="Inter, sans-serif" font-size="20">请求入口、真实代理和供应商能力解耦后，换供应商、排查问题、控制对外接口都会更稳定。</text>
+  </g>
+</svg>
