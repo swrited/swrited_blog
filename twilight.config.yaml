@@ -53,20 +53,20 @@ site:
         src:
             # 桌面壁纸图片 (相对于 /public 目录; 支持单张图片或图片数组，当数组长度 > 1 时自动启用轮播)
             desktop:
-                - "/images/wallpapers/微信图片_20260513211826_111_47.jpg"
-                - "/images/wallpapers/微信图片_20260513211828_112_47.jpg"
-                - "/images/wallpapers/微信图片_20260513211829_113_47.jpg"
-                - "/images/wallpapers/微信图片_20260513211831_114_47.jpg"
-                - "/images/wallpapers/微信图片_20260513211834_115_47.jpg"
-                - "/images/wallpapers/微信图片_20260513211837_116_47.jpg"
+                - "/images/wallpapers/微信图片_20260513211826_111_47.webp"
+                - "/images/wallpapers/微信图片_20260513211828_112_47.webp"
+                - "/images/wallpapers/微信图片_20260513211829_113_47.webp"
+                - "/images/wallpapers/微信图片_20260513211831_114_47.webp"
+                - "/images/wallpapers/微信图片_20260513211834_115_47.webp"
+                - "/images/wallpapers/微信图片_20260513211837_116_47.webp"
             # 移动壁纸图片 (相对于 /public 目录; 支持单张图片或图片数组，当数组长度 > 1 时自动启用轮播)
             mobile:
-                - "/images/wallpapers/微信图片_20260513211826_111_47.jpg"
-                - "/images/wallpapers/微信图片_20260513211828_112_47.jpg"
-                - "/images/wallpapers/微信图片_20260513211829_113_47.jpg"
-                - "/images/wallpapers/微信图片_20260513211831_114_47.jpg"
-                - "/images/wallpapers/微信图片_20260513211834_115_47.jpg"
-                - "/images/wallpapers/微信图片_20260513211837_116_47.jpg"
+                - "/images/wallpapers/微信图片_20260513211826_111_47.webp"
+                - "/images/wallpapers/微信图片_20260513211828_112_47.webp"
+                - "/images/wallpapers/微信图片_20260513211829_113_47.webp"
+                - "/images/wallpapers/微信图片_20260513211831_114_47.webp"
+                - "/images/wallpapers/微信图片_20260513211834_115_47.webp"
+                - "/images/wallpapers/微信图片_20260513211837_116_47.webp"
         # 壁纸位置 ('top' | 'center' | 'bottom')
         position: "center"
         # 轮播配置 (fullscreen 和 banner 模式共享)
