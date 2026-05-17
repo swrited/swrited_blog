@@ -242,9 +242,9 @@ const { enabled: analyticsEnabled, code: analyticsCode } = getAnalyticsConfig();
         {musicPlayerConfig.enable && <MusicPlayer client:idle />}
         <!-- Pio 看板娘组件 - 如果启用了侧边栏，可能需要调整 z-index -->
         {pioConfig.enable && <Pio client:visible />}
-        <!-- Live2D Inni 组件 -->
-        <Live2dInni />
-        <!-- Inni Companion 像素版（默认隐藏，WebGL 不支持时降级显示） -->
+        <!-- Live2D Inni 组件（当前隐藏，调试中） -->
+        <!-- <Live2dInni /> -->
+        <!-- Inni Companion 像素版 -->
         <InniCompanion />
         <!-- increase the page height during page transition to prevent the scrolling animation from jumping -->
         <div id="page-height-extend" class="hidden h-[300vh]"></div>
