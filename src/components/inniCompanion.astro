@@ -22,7 +22,11 @@
   #inni-canvas:active {
     cursor: grabbing;
   }
-  /* 移动端默认隐藏 */
+  /* 默认隐藏，因为 Live2D 版优先显示；WebGL 不支持时通过 JS 切换回来 */
+  #inni-companion {
+    display: none;
+  }
+  /* 移动端也保持隐藏（与 Live2D 一致） */
   @media (max-width: 768px) {
     #inni-companion {
       display: none;
