@@ -107,7 +107,7 @@
         height: 280,
         backgroundAlpha: 0,
         antialias: true,
-        resolution: window.devicePixelRatio || 1,
+        resolution: Math.min(window.devicePixelRatio || 1, 2),
         autoDensity: true,
       });
 
