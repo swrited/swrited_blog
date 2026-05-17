@@ -1,0 +1,201 @@
+<div id="inni-companion">
+  <canvas id="inni-canvas" width="192" height="208"></canvas>
+</div>
+
+<style>
+  #inni-companion {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+    pointer-events: none;
+    user-select: none;
+  }
+  #inni-canvas {
+    width: 80px;
+    height: 86.67px;
+    pointer-events: all;
+    cursor: grab;
+    image-rendering: pixelated;
+    -webkit-user-drag: none;
+  }
+  #inni-canvas:active {
+    cursor: grabbing;
+  }
+  /* 移动端默认隐藏 */
+  @media (max-width: 768px) {
+    #inni-companion {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  (function initInni() {
+    const inni = document.getElementById('inni-companion');
+    const canvas = document.getElementById('inni-canvas') as HTMLCanvasElement | null;
+    if (!inni || !canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // 动画定义: [行, 帧数, 是否循环]
+    const animsDef = {
+      idle:   { row: 0, frames: 6, speed: 1200, loop: true },
+      waving: { row: 3, frames: 4, speed: 1200, loop: true },
+      waiting:{ row: 6, frames: 6, speed: 1200, loop: false, playCount: 2 },
+      review: { row: 8, frames: 6, speed: 1200, loop: true },
+    };
+
+    const COLS = 8;
+    const FRAME_W = 192;
+    const FRAME_H = 208;
+
+    const spritesheet = new Image();
+    spritesheet.src = '/images/inni/spritesheet.webp';
+    spritesheet.crossOrigin = 'anonymous';
+
+    let isDragging = false;
+    let currentX = window.innerWidth - 130;
+    let currentY = window.innerHeight - 160;
+    let idleTimer: ReturnType<typeof setTimeout>;
+
+    // 动画状态
+    let currentAnim = 'idle' as keyof typeof animsDef;
+    let frameIndex = 0;
+    let lastFrameTime = 0;
+    let animRequestId = 0;
+    let animPlayCount = 0;
+
+    // 读取上次位置
+    const savedX = sessionStorage.getItem('inni-x');
+    const savedY = sessionStorage.getItem('inni-y');
+    if (savedX && savedY) {
+      currentX = parseFloat(savedX);
+      currentY = parseFloat(savedY);
+    }
+
+    // 应用位置
+    inni.style.cssText = `position:fixed;left:${currentX}px;top:${currentY}px;z-index:9999;pointer-events:none;user-select:none;`;
+
+    // 绘制帧
+    function drawFrame() {
+      if (!ctx) return;
+      const def = animsDef[currentAnim];
+      const col = frameIndex % COLS;
+      const row = def.row + Math.floor(frameIndex / COLS);
+
+      ctx.clearRect(0, 0, FRAME_W, FRAME_H);
+      if (spritesheet.complete && spritesheet.naturalWidth > 0) {
+        ctx.drawImage(
+          spritesheet,
+          col * FRAME_W,
+          row * FRAME_H,
+          FRAME_W,
+          FRAME_H,
+          0,
+          0,
+          FRAME_W,
+          FRAME_H
+        );
+      }
+    }
+
+    // 动画循环
+    function animate(timestamp: number) {
+      const def = animsDef[currentAnim];
+      if (!lastFrameTime) lastFrameTime = timestamp;
+      if (timestamp - lastFrameTime >= def.speed) {
+        frameIndex = frameIndex + 1;
+        lastFrameTime = timestamp;
+        if (frameIndex >= def.frames) {
+          animPlayCount += 1;
+          if (!def.loop && animPlayCount >= (def.playCount || 1)) {
+            // 非循环动画播放完成，回到 idle
+            setAnim('idle');
+            animRequestId = requestAnimationFrame(animate);
+            return;
+          }
+          frameIndex = 0;
+        }
+        drawFrame();
+      }
+      animRequestId = requestAnimationFrame(animate);
+    }
+
+    // 切换动画
+    function setAnim(name: keyof typeof animsDef) {
+      if (currentAnim === name) return;
+      currentAnim = name;
+      frameIndex = 0;
+      lastFrameTime = 0;
+      animPlayCount = 0;
+      drawFrame();
+    }
+
+    // 启动
+    spritesheet.onload = () => {
+      drawFrame();
+      if (!animRequestId) animRequestId = requestAnimationFrame(animate);
+    };
+    if (spritesheet.complete && spritesheet.naturalWidth > 0) {
+      drawFrame();
+      if (!animRequestId) animRequestId = requestAnimationFrame(animate);
+    }
+
+    // 拖动逻辑
+    canvas.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      setAnim('waving');
+      clearTimeout(idleTimer);
+      e.preventDefault();
+    });
+
+    document.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      currentX = e.clientX - canvas.offsetWidth / 2;
+      currentY = e.clientY - canvas.offsetHeight / 2;
+      inni.style.left = currentX + 'px';
+      inni.style.top = currentY + 'px';
+    });
+
+    document.addEventListener('mouseup', () => {
+      if (!isDragging) return;
+      isDragging = false;
+      sessionStorage.setItem('inni-x', String(currentX));
+      sessionStorage.setItem('inni-y', String(currentY));
+      idleTimer = setTimeout(() => {
+        setAnim('idle');
+      }, 3000);
+    });
+
+    // 滚动到底部检测
+    function handleScroll() {
+      if (isDragging) return;
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const atBottom = scrollTop + window.innerHeight >= document.documentElement.scrollHeight - 10;
+      setAnim(atBottom ? 'review' : 'waiting');
+      clearTimeout(idleTimer);
+      idleTimer = setTimeout(() => {
+        setAnim('idle');
+      }, 3000);
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    // Swup 页面切换后重置为 idle
+    if ((window as any).swup?.hooks) {
+      (window as any).swup.hooks.on('page:view', () => {
+        clearTimeout(idleTimer);
+        setAnim('idle');
+      });
+    } else {
+      document.addEventListener('swup:enable', () => {
+        (window as any).swup.hooks.on('page:view', () => {
+          clearTimeout(idleTimer);
+          setAnim('idle');
+        });
+      });
+    }
+  })();
+</script>
