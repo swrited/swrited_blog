@@ -178,6 +178,7 @@ const { enabled: analyticsEnabled, code: analyticsCode } = getAnalyticsConfig();
                   media={favicon.theme && `(prefers-color-scheme: ${favicon.theme})`}
             />
         ))}
+        <link rel="icon" href="/images/inni/web/图标.svg" type="image/svg+xml" sizes="any" />
         <!-- Set the theme before the page is rendered to avoid a flash -->
         <script is:inline define:vars={{LIGHT_MODE, DARK_MODE, SYSTEM_MODE, BANNER_HEIGHT_EXTEND, PAGE_WIDTH, NAVBAR_HEIGHT, configHue, defaultTheme: siteConfig.defaultTheme}}>
             // Load the theme from local storage
