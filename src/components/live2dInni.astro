@@ -1,0 +1,296 @@
+<div id="live2d-inni">
+  <div id="live2d-canvas-wrapper">
+    <canvas id="live2d-canvas"></canvas>
+  </div>
+  <button id="live2d-toggle" title="显示/隐藏 Live2D" aria-label="显示/隐藏 Live2D">
+    <svg id="live2d-toggle-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="18 15 12 9 6 15"></polyline>
+    </svg>
+  </button>
+</div>
+
+<style>
+  #live2d-inni {
+    position: fixed;
+    bottom: -20px;
+    left: -20px;
+    z-index: 9999;
+    pointer-events: none;
+    user-select: none;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  #live2d-canvas-wrapper {
+    width: 230px;
+    height: 200px;
+    overflow: hidden;
+    pointer-events: all;
+  }
+  #live2d-canvas {
+    width: 230px;
+    height: 200px;
+    display: block;
+    cursor: grab;
+    -webkit-user-drag: none;
+  }
+  #live2d-canvas:active {
+    cursor: grabbing;
+  }
+  #live2d-toggle {
+    pointer-events: all;
+    background: rgba(var(--tw-colors-s-50), 0.8);
+    border: 1px solid rgba(var(--tw-colors-s-200), 0.6);
+    border-radius: 9999px;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: rgba(var(--tw-colors-s-700), 1);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    transition: transform 0.2s, background 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  #live2d-toggle:hover {
+    background: rgba(var(--tw-colors-s-100), 0.9);
+    transform: scale(1.05);
+  }
+  #live2d-toggle:active {
+    transform: scale(0.95);
+  }
+  #live2d-toggle.hidden-panel #live2d-toggle-icon {
+    transform: rotate(180deg);
+  }
+  #live2d-inni.hidden-panel #live2d-canvas {
+    display: none;
+  }
+  /* 暗色模式适配 */
+  :global(.dark) #live2d-toggle {
+    background: rgba(30, 30, 30, 0.7);
+    border-color: rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.85);
+  }
+  :global(.dark) #live2d-toggle:hover {
+    background: rgba(50, 50, 50, 0.85);
+  }
+  /* 移动端默认隐藏 */
+  @media (max-width: 768px) {
+    #live2d-inni {
+      display: none !important;
+    }
+  }
+</style>
+
+<script>
+  (function initLive2dInni() {
+    const canvasEl = document.getElementById('live2d-canvas') as HTMLCanvasElement | null;
+    const wrapper = document.getElementById('live2d-inni');
+    const toggleBtn = document.getElementById('live2d-toggle');
+    if (!canvasEl || !wrapper || !toggleBtn) return;
+
+    // 手机端直接不加载
+    if (window.innerWidth <= 768) {
+      wrapper.style.display = 'none';
+      return;
+    }
+
+    // 读取显示状态
+    let isPanelVisible = sessionStorage.getItem('live2d-visible') !== 'false';
+    if (!isPanelVisible) {
+      wrapper.classList.add('hidden-panel');
+      toggleBtn.classList.add('hidden-panel');
+    }
+
+    toggleBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      isPanelVisible = !isPanelVisible;
+      sessionStorage.setItem('live2d-visible', String(isPanelVisible));
+      if (isPanelVisible) {
+        wrapper.classList.remove('hidden-panel');
+        toggleBtn.classList.remove('hidden-panel');
+      } else {
+        wrapper.classList.add('hidden-panel');
+        toggleBtn.classList.add('hidden-panel');
+      }
+    });
+
+    // 使用临时 canvas 检测 WebGL，不污染主 canvas
+    var testCanvas = document.createElement('canvas');
+    var gl = testCanvas.getContext('webgl');
+    if (!gl) {
+      wrapper.style.display = 'none';
+      var pixelInni = document.getElementById('inni-companion');
+      if (pixelInni) pixelInni.style.display = 'block';
+      return;
+    }
+
+    const W = 230;
+    const H = 200;
+
+    // 固定在左下角，禁止拖动
+    const currentX = 20;
+    const currentY = window.innerHeight - H - 20;
+    wrapper.style.cssText = 'position:fixed;left:-20px;bottom:-20px;z-index:9999;pointer-events:none;user-select:none;';
+
+    // 按序加载外部脚本
+    function loadScript(src) {
+      return new Promise(function(resolve, reject) {
+        var s = document.createElement('script');
+        s.src = src;
+        s.onload = function() { resolve(); };
+        s.onerror = function() { reject(new Error('Failed to load ' + src)); };
+        document.head.appendChild(s);
+      });
+    }
+
+    async function boot() {
+      try {
+        await loadScript('/live2d-lib/pixi.min.js');
+        await loadScript('/live2d-lib/live2dcubismcore.min.js');
+        await loadScript('/live2d-lib/cubism4.min.js');
+      } catch (e) {
+        console.error('[Live2D Inni] 依赖加载失败', e);
+        wrapper.style.display = 'none';
+        var pixelInni = document.getElementById('inni-companion');
+        if (pixelInni) pixelInni.style.display = 'block';
+        return;
+      }
+
+      var PIXI = window.PIXI;
+      var Live2DModel = PIXI && PIXI.live2d && PIXI.live2d.Live2DModel;
+      if (!PIXI || !Live2DModel) {
+        console.error('[Live2D Inni] PIXI 或 Live2DModel 未找到');
+        wrapper.style.display = 'none';
+        var pixelInni = document.getElementById('inni-companion');
+        if (pixelInni) pixelInni.style.display = 'block';
+        return;
+      }
+
+      Live2DModel.registerTicker(PIXI.Ticker);
+
+      var app = new PIXI.Application({
+        view: canvasEl,
+        width: W,
+        height: H,
+        backgroundAlpha: 0,
+        antialias: true,
+        resolution: Math.min(window.devicePixelRatio || 1, 2),
+        autoDensity: true,
+      });
+
+      var model = null;
+
+      try {
+        model = await Live2DModel.from('/images/inni/live2d/inni_2_eye.model3.json');
+      } catch (e) {
+        console.error('[Live2D Inni] 模型加载失败', e);
+        app.destroy(true, { children: true, texture: true, baseTexture: true });
+        wrapper.style.display = 'none';
+        var pixelInni = document.getElementById('inni-companion');
+        if (pixelInni) pixelInni.style.display = 'block';
+        return;
+      }
+
+      app.stage.addChild(model);
+
+      // 缩放与居中（保持人物大小不变，只裁剪下面部分）
+      var origW = 480;
+      var origH = 560;
+      var scale = Math.min(origW / model.width, origH / model.height) * 1.2;
+      model.scale.set(scale);
+      model.x = W / 2;
+      model.y = H / 2 + 190;
+      model.anchor.set(0.5, 0.5);
+
+      // 自动眨眼/呼吸（通过参数）
+      var blinkTimer = 0;
+      var blinkState = 0; // 0: open, 1: closing, 2: opening
+      var blinkValue = 1; // 1 = open, 0 = closed
+      var ticker = function() {
+        // 简单自动眨眼模拟（每 3~5 秒随机）
+        blinkTimer -= 1 / 60;
+        if (blinkState === 0 && blinkTimer <= 0) {
+          blinkState = 1;
+        }
+        if (blinkState === 1) {
+          blinkValue -= 0.15;
+          if (blinkValue <= 0) {
+            blinkValue = 0;
+            blinkState = 2;
+          }
+        } else if (blinkState === 2) {
+          blinkValue += 0.15;
+          if (blinkValue >= 1) {
+            blinkValue = 1;
+            blinkState = 0;
+            blinkTimer = 3 + Math.random() * 2;
+          }
+        }
+        if (model && model.internalModel) {
+          var core = model.internalModel.coreModel;
+          if (core && typeof core.setParameterValueById === 'function') {
+            core.setParameterValueById('ParamEyeLOpen', blinkValue);
+            core.setParameterValueById('ParamEyeROpen', blinkValue);
+          }
+        }
+      };
+      app.ticker.add(ticker);
+
+      // 鼠标跟踪
+      var targetAngleX = 0;
+      var targetAngleY = 0;
+      var currentAngleX = 0;
+      var currentAngleY = 0;
+
+      document.addEventListener('mousemove', function(e) {
+        if (!model) return;
+        var rect = canvasEl.getBoundingClientRect();
+        var centerX = rect.left + rect.width / 2;
+        var centerY = rect.top + rect.height / 2;
+        var dx = e.clientX - centerX;
+        var dy = e.clientY - centerY;
+        var maxAngle = 15;
+        targetAngleX = Math.max(-maxAngle, Math.min(maxAngle, dx / 20));
+        targetAngleY = Math.max(-maxAngle, Math.min(maxAngle, dy / 20));
+      });
+
+      app.ticker.add(function() {
+        if (!model || !model.internalModel) return;
+        currentAngleX += (targetAngleX - currentAngleX) * 0.1;
+        currentAngleY += (targetAngleY - currentAngleY) * 0.1;
+        var core = model.internalModel.coreModel;
+        if (core && typeof core.setParameterValueById === 'function') {
+          core.setParameterValueById('ParamAngleX', currentAngleX);
+          core.setParameterValueById('ParamAngleY', currentAngleY);
+        }
+      });
+
+      // 禁用拖动
+
+      // Swup 页面切换时仅停止 ticker、移除事件，不销毁 WebGL context，防止重建出错
+      var onPageView = function() {
+        if (app && !app.destroyed) {
+          app.ticker.remove(ticker);
+        }
+        // 重新设置眨眼计时器，让模型回到初始表情
+        blinkTimer = 3 + Math.random() * 2;
+        blinkState = 0;
+        blinkValue = 1;
+      };
+
+      if (window.swup && window.swup.hooks) {
+        window.swup.hooks.on('page:view', onPageView);
+      } else {
+        document.addEventListener('swup:enable', function() {
+          window.swup.hooks.on('page:view', onPageView);
+        });
+      }
+    }
+
+    boot();
+  })();
+</script>
