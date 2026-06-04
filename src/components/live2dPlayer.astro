@@ -1,14 +1,16 @@
 ---
 export interface Props {
     modelPath: string;
+    flipY?: boolean;
 }
 
-const { modelPath } = Astro.props;
+const { modelPath, flipY = false } = Astro.props;
 ---
 
 <div
     class="live2d-player"
     data-model-path={modelPath}
+    data-flip-y={flipY ? "true" : "false"}
     data-state="loading"
 >
     <div class="live2d-player-stage">
@@ -239,6 +241,12 @@ const { modelPath } = Astro.props;
         // 6 自由度目标值 / 当前值
         const head = { tx: 0, ty: 0, tz: 0, cx: 0, cy: 0, cz: 0 };
         const body = { tx: 0, ty: 0, tz: 0, cx: 0, cy: 0, cz: 0 };
+        // 眼睛注视目标，范围 [-1, 1]，比头部更灵敏
+        const eye = { tx: 0, ty: 0, cx: 0, cy: 0 };
+
+        // Y 轴方向取反（某些模型 moc3 中 Y 轴画反了，渲染时把头部/身体的 Y 参数乘 -1 即可）
+        const flipY = root.dataset.flipY === "true";
+        const signY = flipY ? -1 : 1;
 
         const onMouseMove = (e: MouseEvent) => {
             if (!trackingEnabled) return;
@@ -255,6 +263,9 @@ const { modelPath } = Astro.props;
             body.tx = -head.tx * 0.3;
             body.ty = -head.ty * 0.3;
             body.tz = head.tx * 0.05;
+            // 眼睛看光标：缩放更大，鼠标在 100px 半径内眼球就转到极限
+            eye.tx = Math.max(-1, Math.min(1, dx / 100));
+            eye.ty = Math.max(-1, Math.min(1, dy / 100));
         };
         document.addEventListener("mousemove", onMouseMove);
 
@@ -278,13 +289,18 @@ const { modelPath } = Astro.props;
             body.cx += (body.tx - body.cx) * 0.08;
             body.cy += (body.ty - body.cy) * 0.08;
             body.cz += (body.tz - body.cz) * 0.08;
+            // 眼睛比头部更灵敏（更快的插值）
+            eye.cx += (eye.tx - eye.cx) * 0.18;
+            eye.cy += (eye.ty - eye.cy) * 0.18;
 
             setParam("ParamAngleX", head.cx);
-            setParam("ParamAngleY", head.cy);
+            setParam("ParamAngleY", signY * head.cy);
             setParam("ParamAngleZ", head.cz);
             setParam("ParamBodyAngleX", body.cx);
-            setParam("ParamBodyAngleY", body.cy);
+            setParam("ParamBodyAngleY", signY * body.cy);
             setParam("ParamBodyAngleZ", body.cz);
+            setParam("ParamEyeBallX", eye.cx);
+            setParam("ParamEyeBallY", signY * eye.cy);
 
             // 自动眨眼
             blinkTimer -= 1 / 60;
