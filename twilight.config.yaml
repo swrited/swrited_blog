@@ -5,7 +5,7 @@ site:
     # 站点标题
     title: "swrited"
     # 站点副标题
-    subtitle: "随写随记"
+    subtitle: "Inni，亦是「因你」"
     # 语言配置
     lang: "zh-Hans"
     # 翻译配置
@@ -87,7 +87,7 @@ site:
                 title: "swrited"
                 # 副标题，支持单个字符串或字符串数组
                 subtitle:
-                    - "随写随记"
+                    - "Inni，亦是「因你」"
                 # 副标题打字机效果
                 typewriter:
                     # 启用副标题打字机效果
@@ -181,11 +181,18 @@ navbar:
             "Archive"
         - # 一级导航链接 - 友链 (预设)
             "Friends"
-        - # 一级导航链接 - 工具
-            name: "工具"
-            url: "/tools/"
-            icon: "material-symbols:tools-wrench"
-            description: "实用工具集合"
+        - # 一级导航链接 - Showcase
+            name: "Showcase"
+            url: "/showcase/"
+            icon: "material-symbols:collections-bookmark"
+            description: "A collection of my works and experiments."
+            children:
+                - # 子项 - Live2D 模型
+                    name: "Live2D"
+                    url: "/showcase/live2d/"
+                    icon: "material-symbols:face-6"
+                    image: "/images/inni/showcase-cover.png"
+                    description: "Interactive Live2D Cubism models I have created."
 
 # 侧边栏配置
 sidebar:
@@ -283,8 +290,11 @@ profile:
 announcement:
     # 公告标题
     title: "公告"
-    # 公告内容
-    content: "欢迎来访 ~"
+    # 公告内容（支持 HTML，使用 set:html 渲染）
+    content: |
+        <p>你好呀，欢迎来到这里。</p>
+        <p>这里记录着代码、想法、研究，还有一只名叫 Inni 的小狐狸。</p>
+        <p>希望你能找到属于自己的故事。</p>
     # 允许用户关闭公告
     closable: true
     # 链接配置

@@ -243,7 +243,7 @@ const { enabled: analyticsEnabled, code: analyticsCode } = getAnalyticsConfig();
         {musicPlayerConfig.enable && <MusicPlayer client:idle />}
         <!-- Pio 看板娘组件 - 如果启用了侧边栏，可能需要调整 z-index -->
         {pioConfig.enable && <Pio client:visible />}
-        <Live2dInni />
+        {!Astro.url.pathname.startsWith("/showcase/live2d/") && <Live2dInni />}
         <InniCompanion />
         <!-- increase the page height during page transition to prevent the scrolling animation from jumping -->
         <div id="page-height-extend" class="hidden h-[300vh]"></div>
@@ -352,6 +352,11 @@ const setup = () => {
         });
     })
     window.swup.hooks.on('visit:start', (visit: {to: {url: string}}) => {
+        // 离开前彻底清理所有 Live2DPlayer 的 PIXI 实例 + 重置 canvas，
+        // 否则 swup 复用 canvas 进入新 page 时 PIXI/cubism 状态会污染，模型渲染失败
+        if (typeof (window as any).__live2dCleanupAll === 'function') {
+            (window as any).__live2dCleanupAll();
+        }
         // Disable scroll protection when a link is clicked to prevent interference with page jump scrolling to top
         if ((window as any).scrollProtectionManager && typeof (window as any).scrollProtectionManager.disable === 'function') {
             (window as any).scrollProtectionManager.disable();

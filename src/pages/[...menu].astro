@@ -65,19 +65,35 @@ const pageDescription = link.description || "";
                     <a
                         href={child.external ? child.url : url(child.url)}
                         target={child.external ? "_blank" : null}
-                        class="menu-card group flex flex-col items-center justify-center p-8 rounded-xl border transition-all duration-300"
+                        class:list={[
+                            "menu-card group flex flex-col rounded-xl border transition-all duration-300 overflow-hidden",
+                            child.image ? "p-0" : "items-center justify-center p-8",
+                        ]}
                     >
-                        <div class="icon-wrapper w-16 h-16 flex items-center justify-center rounded-full mb-4 transition-all duration-300">
-                            {child.icon && <Icon name={child.icon} class="text-3xl" />}
-                        </div>
-                        <h2 class="text-xl font-bold text-neutral-900 dark:text-neutral-100 group-hover:text-(--primary) transition-colors duration-300 text-center">
-                            {child.name}
-                        </h2>
-                        {child.description && (
-                            <p class="text-sm text-neutral-600 dark:text-neutral-400 text-center mt-2 line-clamp-2">
-                                {child.description}
-                            </p>
+                        {child.image ? (
+                            <div class="menu-card-image-wrapper w-full aspect-[4/3] overflow-hidden bg-(--card-bg)">
+                                <img
+                                    src={child.image}
+                                    alt={child.name}
+                                    class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                    loading="lazy"
+                                />
+                            </div>
+                        ) : (
+                            <div class="icon-wrapper w-16 h-16 flex items-center justify-center rounded-full mb-4 transition-all duration-300">
+                                {child.icon && <Icon name={child.icon} class="text-3xl" />}
+                            </div>
                         )}
+                        <div class:list={["flex flex-col", child.image ? "items-center text-center px-6 py-5" : "items-center"]}>
+                            <h2 class="text-xl font-bold text-neutral-900 dark:text-neutral-100 group-hover:text-(--primary) transition-colors duration-300 text-center">
+                                {child.name}
+                            </h2>
+                            {child.description && (
+                                <p class="text-sm text-neutral-600 dark:text-neutral-400 text-center mt-2 line-clamp-2">
+                                    {child.description}
+                                </p>
+                            )}
+                        </div>
                     </a>
                 ))}
             </div>

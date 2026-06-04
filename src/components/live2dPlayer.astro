@@ -1,0 +1,347 @@
+---
+export interface Props {
+    modelPath: string;
+}
+
+const { modelPath } = Astro.props;
+---
+
+<div
+    class="live2d-player"
+    data-model-path={modelPath}
+    data-state="loading"
+>
+    <div class="live2d-player-stage">
+        <div class="live2d-player-canvas-wrapper">
+            <canvas class="live2d-player-canvas"></canvas>
+        </div>
+        <label class="live2d-player-toggle">
+            <input type="checkbox" class="live2d-player-tracking" checked />
+            <span>鼠标跟随</span>
+        </label>
+        <p class="live2d-player-hint">移动鼠标让模型头部 + 身体跟随 · 自动眨眼</p>
+        <p class="live2d-player-status" role="status" hidden></p>
+    </div>
+</div>
+
+<style>
+    .live2d-player {
+        width: 100%;
+        margin-top: 1rem;
+    }
+    .live2d-player-stage {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 4 / 5;
+        border-radius: 1rem;
+        overflow: hidden;
+        background: color-mix(in oklch, var(--primary), transparent 95%);
+        border: 1px solid var(--line-divider);
+    }
+    .live2d-player-canvas-wrapper {
+        position: absolute;
+        inset: 0;
+    }
+    .live2d-player-canvas {
+        width: 100%;
+        height: 100%;
+        display: block;
+    }
+    .live2d-player-toggle {
+        position: absolute;
+        top: 0.75rem;
+        left: 0.75rem;
+        z-index: 10;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.35rem 0.7rem;
+        border-radius: 999px;
+        background: color-mix(in oklch, var(--primary), transparent 88%);
+        color: var(--primary);
+        font-size: 0.75rem;
+        cursor: pointer;
+        user-select: none;
+        backdrop-filter: blur(4px);
+    }
+    .live2d-player-toggle input {
+        margin: 0;
+        cursor: pointer;
+        accent-color: var(--primary);
+    }
+    .live2d-player-hint {
+        position: absolute;
+        bottom: 0.75rem;
+        left: 0;
+        right: 0;
+        margin: 0;
+        text-align: center;
+        font-size: 0.75rem;
+        color: color-mix(in oklch, var(--primary), transparent 30%);
+        pointer-events: none;
+    }
+    .live2d-player-status {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        transform: translateY(-50%);
+        margin: 0;
+        text-align: center;
+        color: rgb(220, 38, 38);
+        font-size: 0.875rem;
+    }
+</style>
+
+<script>
+    function loadScript(src: string): Promise<void> {
+        const base = src.split("?")[0];
+
+        // 关键：每次加载 PIXI/cubism4 之前都先清掉 window 上对应的全局对象 + 移除旧 script 标签，
+        // 让 PIXI 和 Live2DModel 类重新初始化，避免旧 page 的脏状态污染
+        // 注意：live2dcubismcore（SDK Core）只加载一次，不要 reset，
+        // 它的 Utils 等静态 API 是 immutable 的，反复重置会在 visit:start 清理窗口
+        // 期间让旧 PIXI ticker 渲染时访问到 undefined
+        const reset = (name: string) => {
+            try { delete (window as any)[name]; } catch { /* ignore */ }
+            (window as any)[name] = undefined;
+        };
+        const resetChild = (parent: string, child: string) => {
+            const p = (window as any)[parent];
+            if (p) {
+                try { delete p[child]; } catch { /* ignore */ }
+                p[child] = undefined;
+            }
+        };
+        if (base.endsWith("pixi.min.js")) {
+            reset("PIXI");
+        } else if (base.endsWith("cubism4.min.js")) {
+            resetChild("PIXI", "live2d");
+        }
+        // live2dcubismcore.min.js 跳过 reset，只移除旧 script 标签以避免重复执行
+        document
+            .querySelectorAll<HTMLScriptElement>(`script[src^="${base}"]`)
+            .forEach((el) => el.remove());
+
+        return new Promise((resolve, reject) => {
+            const s = document.createElement("script");
+            s.src = src;
+            s.onload = () => resolve();
+            s.onerror = () => reject(new Error("Failed to load " + src));
+            document.head.appendChild(s);
+        });
+    }
+
+    function setStatus(root: HTMLElement, msg: string, isError = false) {
+        const el = root.querySelector<HTMLElement>(".live2d-player-status");
+        if (!el) return;
+        el.hidden = !msg;
+        el.textContent = msg;
+        el.style.color = isError ? "rgb(220, 38, 38)" : "currentColor";
+    }
+
+    async function activate(root: HTMLElement) {
+        const modelPath = root.dataset.modelPath;
+        const canvas = root.querySelector<HTMLCanvasElement>(".live2d-player-canvas");
+        const stage = root.querySelector<HTMLElement>(".live2d-player-stage");
+        if (!modelPath || !canvas || !stage) return;
+
+        // 防御性清理：上一次离开页面没正常销毁的 PIXI 实例（Astro view transitions 复用 DOM 时常见）
+        const oldApp = (root as any).__pixiApp;
+        if (oldApp && !oldApp.destroyed) {
+            try {
+                oldApp.destroy(true, { children: true, texture: true, baseTexture: true });
+            } catch {
+                /* ignore */
+            }
+        }
+        (root as any).__pixiApp = null;
+        // 强制重置 canvas 释放旧 WebGL context
+        canvas.width = canvas.width;
+
+        // WebGL precheck
+        const test = document.createElement("canvas");
+        if (!test.getContext("webgl")) {
+            setStatus(root, "当前浏览器不支持 WebGL", true);
+            return;
+        }
+
+        setStatus(root, "加载 Live2D 运行时…");
+
+        try {
+            await loadScript("/live2d-lib/pixi.min.js?v=20260604");
+            await loadScript("/live2d-lib/live2dcubismcore.min.js?v=20260604");
+            await loadScript("/live2d-lib/cubism4.min.js?v=20260604");
+        } catch (e) {
+            console.error("[Live2D Player] 依赖加载失败", e);
+            setStatus(root, "Live2D 运行时加载失败", true);
+            return;
+        }
+
+        const PIXI = (window as any).PIXI;
+        const Live2DModel = PIXI?.live2d?.Live2DModel;
+        if (!PIXI || !Live2DModel) {
+            setStatus(root, "Live2D 运行时不可用", true);
+            return;
+        }
+        Live2DModel.registerTicker(PIXI.Ticker);
+
+        const W = stage.clientWidth || 480;
+        const H = stage.clientHeight || 600;
+
+        let app: any;
+        let model: any;
+        try {
+            app = new PIXI.Application({
+                view: canvas,
+                width: W,
+                height: H,
+                backgroundAlpha: 0,
+                antialias: true,
+                resolution: Math.min(window.devicePixelRatio || 1, 2),
+                autoDensity: true,
+            });
+            model = await Live2DModel.from(modelPath);
+        } catch (e) {
+            console.error("[Live2D Player] 模型加载失败", e);
+            setStatus(root, "模型加载失败", true);
+            if (app && !app.destroyed) app.destroy(true, { children: true, texture: true, baseTexture: true });
+            return;
+        }
+
+        setStatus(root, "");
+        app.stage.addChild(model);
+        (root as any).__pixiApp = app;
+
+        // 用真实可见区域定位
+        model.updateTransform();
+        const bounds = model.getLocalBounds();
+        const totalW = model.width;
+        const totalH = model.height;
+        const boundsCenterX = bounds.x + bounds.width / 2;
+        const boundsCenterY = bounds.y + bounds.height / 2;
+        model.anchor.set(
+            totalW > 0 ? boundsCenterX / totalW : 0.5,
+            totalH > 0 ? boundsCenterY / totalH : 0.5
+        );
+        const fitScale = Math.min(W / bounds.width, H / bounds.height) * 0.92;
+        model.scale.set(fitScale);
+        model.x = W / 2;
+        model.y = H / 2;
+
+        // 鼠标跟随状态
+        const trackingBox = root.querySelector<HTMLInputElement>(".live2d-player-tracking");
+        let trackingEnabled = trackingBox?.checked ?? true;
+        trackingBox?.addEventListener("change", () => {
+            trackingEnabled = trackingBox.checked;
+        });
+
+        // 6 自由度目标值 / 当前值
+        const head = { tx: 0, ty: 0, tz: 0, cx: 0, cy: 0, cz: 0 };
+        const body = { tx: 0, ty: 0, tz: 0, cx: 0, cy: 0, cz: 0 };
+
+        const onMouseMove = (e: MouseEvent) => {
+            if (!trackingEnabled) return;
+            const rect = canvas.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            const dx = e.clientX - centerX;
+            const dy = e.clientY - centerY;
+            const maxAngle = 30;
+            head.tx = Math.max(-maxAngle, Math.min(maxAngle, dx / 15));
+            head.ty = Math.max(-maxAngle, Math.min(maxAngle, dy / 15));
+            head.tz = head.tx * 0.1;
+            // 身体反方向且幅度小
+            body.tx = -head.tx * 0.3;
+            body.ty = -head.ty * 0.3;
+            body.tz = head.tx * 0.05;
+        };
+        document.addEventListener("mousemove", onMouseMove);
+
+        // 自动眨眼
+        let blinkTimer = 3 + Math.random() * 2;
+        let blinkState = 0; // 0: open, 1: closing, 2: opening
+        let blinkValue = 1;
+
+        const core = model.internalModel.coreModel;
+        const setParam = (id: string, v: number) => {
+            if (typeof core.setParameterValueById === "function") {
+                try { core.setParameterValueById(id, v); } catch { /* ignore */ }
+            }
+        };
+
+        const ticker = () => {
+            // 平滑插值
+            head.cx += (head.tx - head.cx) * 0.1;
+            head.cy += (head.ty - head.cy) * 0.1;
+            head.cz += (head.tz - head.cz) * 0.1;
+            body.cx += (body.tx - body.cx) * 0.08;
+            body.cy += (body.ty - body.cy) * 0.08;
+            body.cz += (body.tz - body.cz) * 0.08;
+
+            setParam("ParamAngleX", head.cx);
+            setParam("ParamAngleY", head.cy);
+            setParam("ParamAngleZ", head.cz);
+            setParam("ParamBodyAngleX", body.cx);
+            setParam("ParamBodyAngleY", body.cy);
+            setParam("ParamBodyAngleZ", body.cz);
+
+            // 自动眨眼
+            blinkTimer -= 1 / 60;
+            if (blinkState === 0 && blinkTimer <= 0) blinkState = 1;
+            if (blinkState === 1) {
+                blinkValue -= 0.15;
+                if (blinkValue <= 0) { blinkValue = 0; blinkState = 2; }
+            } else if (blinkState === 2) {
+                blinkValue += 0.15;
+                if (blinkValue >= 1) {
+                    blinkValue = 1;
+                    blinkState = 0;
+                    blinkTimer = 3 + Math.random() * 2;
+                }
+            }
+            setParam("ParamEyeLOpen", blinkValue);
+            setParam("ParamEyeROpen", blinkValue);
+        };
+        app.ticker.add(ticker);
+
+        // 离开页面时彻底销毁 PIXI Application + 释放 WebGL context，
+        // 否则 Astro view transitions 复用 canvas 会导致再次进入时模型渲染失败
+        const cleanup = () => {
+            if (app && !app.destroyed) {
+                try {
+                    app.destroy(true, { children: true, texture: true, baseTexture: true });
+                } catch {
+                    /* ignore */
+                }
+            }
+            (root as any).__pixiApp = null;
+            try {
+                canvas.width = canvas.width;
+            } catch {
+                /* ignore */
+            }
+        };
+        window.addEventListener("pagehide", cleanup, { once: true });
+        document.addEventListener("astro:before-swap", cleanup, { once: true });
+        // 兜底：HMR / 组件重建
+        (root as any).__cleanup = cleanup;
+
+        root.dataset.state = "loaded";
+    }
+
+    document.querySelectorAll<HTMLElement>(".live2d-player").forEach((root) => {
+        activate(root);
+    });
+
+    // 暴露全局清理函数：swup visit:start 钩子会调用它销毁所有 Live2DPlayer 的 PIXI 实例，
+    // 否则 swup 复用 canvas 会导致下一次进入时 PIXI/cubism 状态损坏
+    (window as any).__live2dCleanupAll = () => {
+        document.querySelectorAll<HTMLElement>(".live2d-player").forEach((root) => {
+            const cleanup = (root as any).__cleanup;
+            if (typeof cleanup === "function") {
+                try { cleanup(); } catch { /* ignore */ }
+            }
+        });
+    };
+</script>

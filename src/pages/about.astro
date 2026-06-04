@@ -10,6 +10,7 @@ import Markdown from "@components/common/markdown.astro";
 import Comment from "@components/comment.astro";
 import GridLayout from "@layouts/grid.astro";
 import BackwardButton from "@components/backwardButton.astro";
+import Timeline from "@components/Timeline.astro";
 
 
 const pageTitle = LinkPresets[LinkPreset.About].name;
@@ -29,6 +30,8 @@ const { Content, headings } = await render(aboutPost);
             <BackwardButton currentPath={Astro.url.pathname} />
             <Markdown class="mt-2">
                 <Content />
+                <p class="font-bold mt-4 mb-2">时间线</p>
+                <Timeline />
             </Markdown>
         </div>
     </div>

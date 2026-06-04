@@ -1,0 +1,43 @@
+---
+import GridLayout from "@layouts/grid.astro";
+import { live2dModels } from "@/data/live2d-models";
+import Comment from "@components/comment.astro";
+
+const pageTitle = "Live2D Models";
+const pageDescription = "Interactive Live2D Cubism models I have created.";
+---
+
+<GridLayout title={pageTitle} description={pageDescription}>
+    <div class="flex w-full rounded-(--radius-large) overflow-hidden relative min-h-32">
+        <div class="card-base z-10 px-9 py-6 relative w-full">
+            <p class="text-neutral-600 dark:text-neutral-400">
+                Click a model to view it with full parameter controls.
+            </p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
+                {live2dModels.map((m) => (
+                    <a
+                        href={`/showcase/live2d/${m.slug}/`}
+                        data-no-swup
+                        class="live2d-card group flex flex-col rounded-xl border border-(--line-divider) overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:border-(--primary) hover:shadow-lg"
+                    >
+                        <div class="aspect-square overflow-hidden bg-(--card-bg)">
+                            <img
+                                src={m.image}
+                                alt={m.name}
+                                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                loading="lazy"
+                            />
+                        </div>
+                        <div class="px-5 py-4 text-center">
+                            <h2 class="text-lg font-bold text-neutral-900 dark:text-neutral-100 group-hover:text-(--primary) transition-colors">
+                                {m.name}
+                            </h2>
+                            <p class="text-xs text-neutral-500 mt-1">Click to open</p>
+                        </div>
+                    </a>
+                ))}
+            </div>
+        </div>
+    </div>
+    <Comment path="/showcase/live2d/" />
+</GridLayout>

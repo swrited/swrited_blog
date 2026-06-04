@@ -1,4 +1,4 @@
-<script context="module" lang="ts">
+<script module lang="ts">
     let isGlobalInitialized = false;
     let cachedEcharts: any = null;
 </script>

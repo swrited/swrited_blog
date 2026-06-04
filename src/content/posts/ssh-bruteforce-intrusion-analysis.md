@@ -228,7 +228,7 @@ MD5 相同的副本一共有四份：
 
 在 `/etc/crontab` 中被插入了：
 
-```crontab
+```text
 */1 * * * * root /.mod
 ```
 

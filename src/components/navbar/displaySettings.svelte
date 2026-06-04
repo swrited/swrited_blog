@@ -52,7 +52,7 @@ $effect(() => {
 });
 </script>
 
-<div class="relative z-50" onmouseleave={closePanel}>
+<div class="relative z-50" onmouseleave={closePanel} role="presentation">
     <button aria-label="Display Settings" class="btn-plain scale-animation rounded-lg h-11 w-11 active:scale-90 flex items-center justify-center" 
         id="display-settings-switch"
         onclick={() => { if (window.innerWidth < BREAKPOINT_LG) { openPanel(); } else { togglePanel(); } }}

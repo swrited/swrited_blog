@@ -241,6 +241,8 @@ export type NavbarLink = {
     icon?: string;
     // 中转页描述
     description?: string;
+    // 预览图（用于中转页/列表的卡片缩略图）
+    image?: string;
     // 子链接，可以是NavbarLink或LinkPreset
     children?: (NavbarLink | LinkPreset)[];
 };

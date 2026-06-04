@@ -25,8 +25,7 @@ const style = Astro.props.style;
 >
     <div>
         <!-- 公告栏内容 -->
-        <div class="text-neutral-600 dark:text-neutral-300 leading-relaxed mb-3">
-            {config.content}
+        <div class="text-neutral-600 dark:text-neutral-300 leading-relaxed mb-3 announcement-body" set:html={config.content}>
         </div>
         <!-- 可选链接和关闭按钮 -->
         <div class="flex items-center justify-between gap-3">
@@ -77,3 +76,12 @@ const style = Astro.props.style;
     // Make function global
     window.closeAnnouncement = closeAnnouncement;
 </script>
+
+<style>
+    .announcement-body :global(p) {
+        margin: 0 0 0.5em 0;
+    }
+    .announcement-body :global(p:last-child) {
+        margin-bottom: 0;
+    }
+</style>

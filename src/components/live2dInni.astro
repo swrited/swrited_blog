@@ -87,6 +87,11 @@
 
 <script>
   (function initLive2dInni() {
+    // 幂等守卫：Astro swup integration 会给 page-level <script> 加 data-astro-rerun，
+    // 切页面时会重新执行本 IIFE。如果已经初始化过，直接 return，避免多 PIXI app 抢同一个 canvas
+    if ((window as any).__live2dInniBooted) return;
+    (window as any).__live2dInniBooted = true;
+
     const canvasEl = document.getElementById('live2d-canvas') as HTMLCanvasElement | null;
     const wrapper = document.getElementById('live2d-inni');
     const toggleBtn = document.getElementById('live2d-toggle');
@@ -136,8 +141,12 @@
     const currentY = window.innerHeight - H - 20;
     wrapper.style.cssText = 'position:fixed;left:-20px;bottom:-20px;z-index:9999;pointer-events:none;user-select:none;';
 
-    // 按序加载外部脚本
+    // 按序加载外部脚本；已存在的同 src 脚本直接 resolve，避免 swup rerun 重复执行
+    // 导致 Live2DCubismCore 状态混乱 / 多个 PIXI app 抢同一个 canvas 的 WebGL context
     function loadScript(src) {
+      if (document.querySelector('script[src="' + src + '"]')) {
+        return Promise.resolve();
+      }
       return new Promise(function(resolve, reject) {
         var s = document.createElement('script');
         s.src = src;
@@ -185,7 +194,7 @@
       var model = null;
 
       try {
-        model = await Live2DModel.from('/images/inni/live2d/inni_2_eye.model3.json');
+        model = await Live2DModel.from('/images/inni/live2d/inni_sleep/input1.model3.json');
       } catch (e) {
         console.error('[Live2D Inni] 模型加载失败', e);
         app.destroy(true, { children: true, texture: true, baseTexture: true });
@@ -197,14 +206,21 @@
 
       app.stage.addChild(model);
 
-      // 缩放与居中（保持人物大小不变，只裁剪下面部分）
-      var origW = 480;
-      var origH = 560;
-      var scale = Math.min(origW / model.width, origH / model.height) * 1.2;
-      model.scale.set(scale);
+      // 缩放与居中：用模型实际可见区域自适应，不假设特定尺寸
+      model.updateTransform();
+      var bounds = model.getLocalBounds();
+      var totalW = model.width;
+      var totalH = model.height;
+      var boundsCenterX = bounds.x + bounds.width / 2;
+      var boundsCenterY = bounds.y + bounds.height / 2;
+      model.anchor.set(
+        totalW > 0 ? boundsCenterX / totalW : 0.5,
+        totalH > 0 ? boundsCenterY / totalH : 0.5
+      );
+      var fitScale = Math.min(W / bounds.width, H / bounds.height) * 0.95;
+      model.scale.set(fitScale);
       model.x = W / 2;
-      model.y = H / 2 + 190;
-      model.anchor.set(0.5, 0.5);
+      model.y = H / 2;
 
       // 自动眨眼/呼吸（通过参数）
       var blinkTimer = 0;
@@ -271,12 +287,10 @@
 
       // 禁用拖动
 
-      // Swup 页面切换时仅停止 ticker、移除事件，不销毁 WebGL context，防止重建出错
+      // Swup 切页面时 inni 的 PIXI app 不会被销毁（DOM 在 swup container 之外），
+      // ticker 也无需停/启，保持 60fps 持续渲染即可。
+      // 只需要在 page:view 时把表情回归初始（眨眼计时器重置），不要 remove ticker。
       var onPageView = function() {
-        if (app && !app.destroyed) {
-          app.ticker.remove(ticker);
-        }
-        // 重新设置眨眼计时器，让模型回到初始表情
         blinkTimer = 3 + Math.random() * 2;
         blinkState = 0;
         blinkValue = 1;

@@ -77,6 +77,22 @@ export default defineConfig({
             updateHead: true,
             updateBodyClass: false,
             globalInstance: true,
+            // 链接有 data-no-swup 时不走 swup，强制整页跳转（用于 Live2D 详情页：
+            // 避免 swup 复用 canvas / PIXI / cubism 状态导致模型渲染失败）
+            ignore: (_url, { el }) => {
+                if (!el) return false;
+                if (typeof el.hasAttribute === "function" && el.hasAttribute("data-no-swup")) {
+                    return true;
+                }
+                let cur = el;
+                while (cur && cur !== document.body) {
+                    if (typeof cur.hasAttribute === "function" && cur.hasAttribute("data-no-swup")) {
+                        return true;
+                    }
+                    cur = cur.parentElement;
+                }
+                return false;
+            },
             // Scroll related configuration optimization
             smoothScrolling: false, // Disable smooth scrolling to improve performance and avoid conflicts with anchor navigation
             resolveUrl: (url) => url,
