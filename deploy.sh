@@ -4,6 +4,15 @@ set -e
 echo ">>> Building site..."
 pnpm run build
 
+# Vercel adapter 把 pagefind 搜索索引输出到 .vercel/output/static/pagefind/，
+# 但 dist/ 里没有。手动拷一份到 dist/,否则部署后搜索功能 404
+if [ -d .vercel/output/static/pagefind ]; then
+    echo ">>> Copying pagefind index into dist/..."
+    cp -R .vercel/output/static/pagefind dist/
+else
+    echo ">>> WARNING: .vercel/output/static/pagefind not found, search index will be missing"
+fi
+
 echo ">>> Deploying dist/ to GitHub Pages..."
 cd dist
 
