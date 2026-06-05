@@ -71,7 +71,10 @@ export default defineConfig({
                 "#right-sidebar",
                 "#middle-sidebar",
             ],
-            cache: true,
+            // 关闭 swup 页面缓存：之前 cache: true 让 swup 把页面 HTML 存进内存，
+            // 浏览器里和 _astro/* 的 1 年 immutable 缓存叠加，部署新版本后用户
+            // 反复看到旧 hash 报 404。关掉之后每次导航都从服务器拉新 HTML
+            cache: false,
             preload: true,
             accessibility: true,
             updateHead: true,

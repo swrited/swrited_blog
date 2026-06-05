@@ -14,17 +14,35 @@ else
 fi
 
 echo ">>> Deploying dist/ to GitHub Pages..."
-cd dist
+PUBLISH_DIR="$(mktemp -d)"
+cleanup() {
+    rm -rf "$PUBLISH_DIR"
+}
+trap cleanup EXIT
 
-# 清理可能存在的旧 git 目录，确保干净
-rm -rf .git
+git clone --depth 1 git@github.com:swrited/swrited.github.io.git "$PUBLISH_DIR"
 
-git init
+# GitHub Pages/Fastly may keep serving stale HTML for hours. Do not delete old
+# hashed Astro assets immediately, otherwise stale HTML can reference missing
+# /_astro/*.js or /_astro/*.css files.
+rsync -a --delete \
+    --exclude ".git/" \
+    --exclude "_astro/" \
+    dist/ "$PUBLISH_DIR/"
+
+if [ -d dist/_astro ]; then
+    mkdir -p "$PUBLISH_DIR/_astro"
+    rsync -a dist/_astro/ "$PUBLISH_DIR/_astro/"
+fi
+
+cd "$PUBLISH_DIR"
 git add -A
-git commit -m "deploy: $(date '+%Y-%m-%d %H:%M:%S')"
-
-# 强制推送到 swrited.github.io 的 main 分支，覆盖原有源码
-git push -f git@github.com:swrited/swrited.github.io.git main
+if git diff --cached --quiet; then
+    echo ">>> No changes to deploy."
+else
+    git commit -m "deploy: $(date '+%Y-%m-%d %H:%M:%S')"
+    git push origin main
+fi
 
 cd -
 echo ">>> Done! Your site has been deployed."

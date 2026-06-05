@@ -1,4 +1,8 @@
 /*
+  # HTML 永远不缓存（max-age=0 + must-revalidate），避免 Cloudflare / Fastly / EdgeOne
+  # 三层 CDN 中任何一层缓存旧版本 HTML → 新 hash 引用 → 浏览器 404。
+  # 静态资源的子规则（/_astro/*、/assets/*、/favicon/*、/pio/*）依然 1 年 immutable。
+  Cache-Control: public, max-age=0, must-revalidate
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
   X-XSS-Protection: 1; mode=block
