@@ -1,6 +1,6 @@
 ---
 title: '给 Inni 一个小屏幕：用 STM32 显示 Claude 的工作状态'
-published: 2026-11-23
+published: 2026-05-31
 description: '补记五月底的一次实体桌宠实践：用 SD 卡保存 Inni 的动画，通过 ESP8266、UART 和 Claude Code hooks，让 STM32 小屏显示正在处理请求还是已经完成。'
 cover: /images/covers/stm32-claude-pet.webp
 coverInContent: false

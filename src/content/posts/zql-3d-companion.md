@@ -1,6 +1,7 @@
 ---
 title: '从 3D 桌宠到随身陪伴'
-published: 2026-11-23
+published: 2026-08-31
+updated: 2026-11-23
 description: '周棋洛陪伴桌宠的开发记录：从 Three.js 和 PMX 角色、空间动作与音频嘴型，继续做到手机端、对话记忆、日程提醒和可撤销的小账本。'
 cover: /images/covers/zql-3d-companion.svg
 coverInContent: false
@@ -20,7 +21,7 @@ draft: false
 
 它是一个独立的 3D 项目。角色表现使用现有 PMX 模型，桌面窗口由 Electron 承载，Three.js 负责渲染。之后我又继续加入手机端、对话记忆、日程和一些日常工具，让角色的回应逐渐能够接上具体的事情。
 
-这篇整理的是截至 **2026 年 11 月 23 日的本地开发状态**。[公开仓库 zql_pet](https://github.com/swrited/zql_pet) 的最近提交仍在 8 月 31 日；后面介绍的部分记忆、日程、账本和 Android 扩展还在本地工作区，尚未全部同步。它们是当前实现的记录，不代表线上已经部署了全部功能。
+**2026 年 11 月 23 日补充：**本文在 8 月 31 日公开版本的基础上，补充了后续本地开发进展。[公开仓库 zql_pet](https://github.com/swrited/zql_pet) 的最近提交仍在 8 月 31 日；后面介绍的部分记忆、日程、账本和 Android 扩展还在本地工作区，尚未全部同步。它们是当前实现的记录，不代表线上已经部署了全部功能。
 
 ## 让角色在三维空间里活动
 

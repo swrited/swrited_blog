@@ -1,6 +1,6 @@
 ---
 title: '让 Inni 用熟悉的声音回应'
-published: 2026-11-23
+published: 2026-08-10
 description: '继续记录 inni-pet-2 的本地对话与语音实验：用 Qwen3 LoRA 调整说话语气，清洗语音片段，接入 GPT-SoVITS，并把回复、字幕和动作组织到一起。'
 cover: /images/covers/inni-local-voice.svg
 coverInContent: false
