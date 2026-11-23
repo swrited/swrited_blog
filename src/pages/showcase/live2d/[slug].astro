@@ -60,7 +60,12 @@ function linkify(text: string): string {
                     </div>
                 </details>
             )}
-            <Live2DPlayer modelPath={model.modelPath} flipY={model.flipY ?? false} />
+            <Live2DPlayer
+                modelPath={model.modelPath}
+                flipY={model.flipY ?? false}
+                positiveXLimit={model.positiveXLimit ?? 1}
+                disableY={model.disableY ?? false}
+            />
         </div>
     </div>
     <Comment path={`/showcase/live2d/${model.slug}/`} />

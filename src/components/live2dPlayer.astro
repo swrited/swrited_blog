@@ -2,15 +2,19 @@
 export interface Props {
     modelPath: string;
     flipY?: boolean;
+    positiveXLimit?: number;
+    disableY?: boolean;
 }
 
-const { modelPath, flipY = false } = Astro.props;
+const { modelPath, flipY = false, positiveXLimit = 1, disableY = false } = Astro.props;
 ---
 
 <div
     class="live2d-player"
     data-model-path={modelPath}
     data-flip-y={flipY ? "true" : "false"}
+    data-positive-x-limit={positiveXLimit}
+    data-disable-y={disableY ? "true" : "false"}
     data-state="loading"
 >
     <div class="live2d-player-stage">
@@ -144,6 +148,9 @@ const { modelPath, flipY = false } = Astro.props;
 
     async function activate(root: HTMLElement) {
         const modelPath = root.dataset.modelPath;
+        const positiveXLimit = Number(root.dataset.positiveXLimit ?? 1);
+        const disableY = root.dataset.disableY === "true";
+        const hasTrackingConstraints = positiveXLimit < 1 || disableY;
         const canvas = root.querySelector<HTMLCanvasElement>(".live2d-player-canvas");
         const stage = root.querySelector<HTMLElement>(".live2d-player-stage");
         if (!modelPath || !canvas || !stage) return;
@@ -203,7 +210,7 @@ const { modelPath, flipY = false } = Astro.props;
                 resolution: Math.min(window.devicePixelRatio || 1, 2),
                 autoDensity: true,
             });
-            model = await Live2DModel.from(modelPath);
+            model = await Live2DModel.from(modelPath, { autoFocus: !hasTrackingConstraints });
         } catch (e) {
             console.error("[Live2D Player] 模型加载失败", e);
             setStatus(root, "模型加载失败", true);
@@ -256,16 +263,16 @@ const { modelPath, flipY = false } = Astro.props;
             const dx = e.clientX - centerX;
             const dy = e.clientY - centerY;
             const maxAngle = 30;
-            head.tx = Math.max(-maxAngle, Math.min(maxAngle, dx / 15));
-            head.ty = Math.max(-maxAngle, Math.min(maxAngle, dy / 15));
+            head.tx = Math.max(-maxAngle, Math.min(maxAngle * positiveXLimit, dx / 15));
+            head.ty = disableY ? 0 : Math.max(-maxAngle, Math.min(maxAngle, dy / 15));
             head.tz = head.tx * 0.1;
             // 身体反方向且幅度小
             body.tx = -head.tx * 0.3;
             body.ty = -head.ty * 0.3;
             body.tz = head.tx * 0.05;
             // 眼睛看光标：缩放更大，鼠标在 100px 半径内眼球就转到极限
-            eye.tx = Math.max(-1, Math.min(1, dx / 100));
-            eye.ty = Math.max(-1, Math.min(1, dy / 100));
+            eye.tx = Math.max(-1, Math.min(positiveXLimit, dx / 100));
+            eye.ty = disableY ? 0 : Math.max(-1, Math.min(1, dy / 100));
         };
         document.addEventListener("mousemove", onMouseMove);
 
@@ -281,6 +288,21 @@ const { modelPath, flipY = false } = Astro.props;
             }
         };
 
+        const applyXYTrackingParams = () => {
+            setParam("ParamAngleX", head.cx);
+            setParam("ParamAngleY", signY * head.cy);
+            setParam("ParamBodyAngleX", body.cx);
+            setParam("ParamBodyAngleY", signY * body.cy);
+            setParam("ParamEyeBallX", eye.cx);
+            setParam("ParamEyeBallY", signY * eye.cy);
+        };
+
+        // SDK 会在 ticker 之后叠加视线、呼吸和物理参数。
+        // 有轴限制的模型在最终绘制前再写入跟随值，保证限幅和 Y 轴锁定。
+        if (hasTrackingConstraints) {
+            model.internalModel.on("beforeModelUpdate", applyXYTrackingParams);
+        }
+
         const ticker = () => {
             // 平滑插值
             head.cx += (head.tx - head.cx) * 0.1;
@@ -293,14 +315,9 @@ const { modelPath, flipY = false } = Astro.props;
             eye.cx += (eye.tx - eye.cx) * 0.18;
             eye.cy += (eye.ty - eye.cy) * 0.18;
 
-            setParam("ParamAngleX", head.cx);
-            setParam("ParamAngleY", signY * head.cy);
+            applyXYTrackingParams();
             setParam("ParamAngleZ", head.cz);
-            setParam("ParamBodyAngleX", body.cx);
-            setParam("ParamBodyAngleY", signY * body.cy);
             setParam("ParamBodyAngleZ", body.cz);
-            setParam("ParamEyeBallX", eye.cx);
-            setParam("ParamEyeBallY", signY * eye.cy);
 
             // 自动眨眼
             blinkTimer -= 1 / 60;

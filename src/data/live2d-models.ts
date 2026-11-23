@@ -6,6 +6,9 @@ export interface Live2DModelEntry {
     note?: string;
     // moc3 中 Y 轴方向相反（建模时画反），渲染时需要把 ParamAngleY / ParamBodyAngleY 取反
     flipY?: boolean;
+    // 向右跟随的 X 轴幅度上限，1 表示完整幅度。
+    positiveXLimit?: number;
+    disableY?: boolean;
 }
 
 export const live2dModels: Live2DModelEntry[] = [
@@ -28,6 +31,7 @@ export const live2dModels: Live2DModelEntry[] = [
         name: "inni_cat",
         image: "/images/inni/inni-cat-cover.png",
         modelPath: "/images/inni/live2d/inni_cat/inni_cat.model3.json",
-        flipY: true,
+        positiveXLimit: 1 / 3,
+        disableY: true,
     },
 ];
