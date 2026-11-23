@@ -10,15 +10,6 @@ export interface Live2DModelEntry {
 
 export const live2dModels: Live2DModelEntry[] = [
     {
-        slug: "inni",
-        name: "inni_original",
-        image: "/images/inni/inni-original-cover.png",
-        modelPath: "/images/inni/live2d/inni_2_eye.model3.json",
-        note: `这是我本人做的第一个live2d,非常的粗糙和奇怪,因为本人画画技术不是特别好,所以使用了gpt生成个人形象,但是发现生成之后不好拆分图层,于是突发奇想开始描图,也没有光影,并且图层分的也很多很杂,分了很多不需要的图层,给自己徒加工作量,在最开始自动网格生成,因为有些图层太小了,自动网格网格之后就消失了,我做的时候一直没有发现,后面发现了也不会导入新的图层,跟着视频学了一下脸部的xyz轴,我的脸部y轴还画反了,并且选择最开始预览的时候画质就不高,最后导出选择纹理集也选了个很低分分辨率的,每一个部分都有一个变换,没有把xy轴跟z轴区分开,并且脸部变换也跟头发变换很割裂,其实单独每个轴是好的,但是合在一起可能有变形冲突就变得不太行了,我也只变换了头部以上的部位,但是这个做的很开心,因为我把她跟ai结合在了一起,放在桌面上小图看还可以,并且我限制了xyz轴的大小,不让她变换动作太大,并且做了一些预设动作,比如随节拍摇摆什么的,还有可以自由对话,接入了minimax的tts,以及将本地的openclaw和hermes也通过一个bride接了起来,虽然这个变换很奇怪吧,但是这也确实是我最初的inni了,我感觉inni能够动起来那瞬间还是很萌的
-
-制作的ai桌面助手:https://github.com/swrited/inni-pet,基于 Electron、PixiJS 和 Live2D Cubism 的桌面宠物项目。当前模型使用仓库内的 inni_model/inni_2_eye.model3.json,窗口内置聊天输入、回复字幕、鼠标追踪和点击触发动作。`,
-    },
-    {
         slug: "inni-sleep",
         name: "inni_sleep",
         image: "/images/inni/inni-sleep-cover.png",
