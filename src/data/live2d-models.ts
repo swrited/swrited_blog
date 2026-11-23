@@ -23,4 +23,10 @@ export const live2dModels: Live2DModelEntry[] = [
         modelPath: "/images/inni/live2d/inni_box/livefox.model3.json",
         flipY: true,
     },
+    {
+        slug: "inni-cat",
+        name: "inni_cat",
+        image: "/images/inni/inni-cat-cover.png",
+        modelPath: "/images/inni/live2d/inni_cat/inni_cat.model3.json",
+    },
 ];

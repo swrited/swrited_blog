@@ -1,0 +1,18 @@
+{
+	"Version": 3,
+	"FileReferences": {
+		"Moc": "inni_cat.moc3",
+		"Textures": [
+			"inni_cat.4096/texture_00.png"
+		],
+		"Physics": "inni_cat.physics3.json",
+		"DisplayInfo": "inni_cat.cdi3.json"
+	},
+	"Groups": [
+		{
+			"Target": "Parameter",
+			"Name": "EyeBlink",
+			"Ids": []
+		}
+	]
+}
