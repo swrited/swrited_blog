@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">从 3D 桌宠到随身陪伴</title>
+  <desc id="desc">项目结构示意，以空间中的抽象线框角色连接动作表现、对话记忆和日常工具。</desc>
+  <defs>
+    <linearGradient id="bg" x2="1" y2="1"><stop stop-color="#10262b"/><stop offset="1" stop-color="#173b3e"/></linearGradient>
+    <linearGradient id="figure" x2="0" y2="1"><stop stop-color="#f5d295" stop-opacity=".24"/><stop offset="1" stop-color="#f5d295" stop-opacity=".02"/></linearGradient>
+  </defs>
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <path d="M850 590 L1190 390 L1530 590 L1190 790 Z M935 540 L1275 740 M1020 490 L1360 690 M1105 440 L1445 640 M935 640 L1275 440 M1020 690 L1360 490 M1105 740 L1445 540" stroke="#6ca29c" stroke-opacity=".25" fill="none"/>
+  <ellipse cx="1190" cy="604" rx="252" ry="113" fill="none" stroke="#8dbbb1" stroke-opacity=".38" stroke-dasharray="5 12"/>
+  <path d="M1190 670 V244 M1190 670 L1500 845 M1190 670 L880 845" stroke="#7ba99f" stroke-opacity=".36" stroke-width="2"/>
+  <g stroke="#e3c591" stroke-width="3" fill="url(#figure)" stroke-linejoin="round">
+    <path d="M1190 284 L1248 317 V384 L1190 418 L1132 384 V317 Z M1190 284 V351 L1248 317 M1190 351 L1132 317 M1190 351 V418"/>
+    <path d="M1127 438 L1190 410 L1253 438 L1232 558 L1190 581 L1148 558 Z M1127 438 L1190 473 L1253 438 M1190 473 V581"/>
+    <path d="M1127 438 L1095 455 L1061 536 L1087 550 L1143 472 M1253 438 L1285 455 L1319 536 L1293 550 L1237 472"/>
+    <path d="M1148 558 L1190 581 L1174 674 L1134 654 Z M1190 581 L1232 558 L1246 654 L1206 674 Z"/>
+  </g>
+  <g font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC',sans-serif">
+    <text x="110" y="125" fill="#9ac2b7" font-size="24" letter-spacing="5">ZQL · PROJECT NOTES</text>
+    <text x="106" y="283" fill="#fff1d7" font-size="82" font-weight="700">从 3D 桌宠</text>
+    <text x="106" y="392" fill="#fff1d7" font-size="82" font-weight="700">到随身陪伴</text>
+    <text x="111" y="462" fill="#acc7c0" font-size="29">让角色的回应接上日常生活</text>
+    <g font-size="26" fill="#d4dfd4">
+      <text x="150" y="588">空间动作与音频嘴型</text>
+      <text x="150" y="651">对话记忆与角色设定</text>
+      <text x="150" y="714">日程提醒与日常工具</text>
+    </g>
+    <g fill="#e3c591"><circle cx="118" cy="579" r="5"/><circle cx="118" cy="642" r="5"/><circle cx="118" cy="705" r="5"/></g>
+    <text x="1190" y="205" text-anchor="middle" fill="#91b5ab" font-size="20" letter-spacing="3">3D COMPANION</text>
+    <text x="1190" y="835" text-anchor="middle" fill="#8fafa6" font-size="19">项目结构示意</text>
+    <text x="111" y="835" fill="#8fafa6" font-size="20" letter-spacing="2">SWRITED</text>
+  </g>
+</svg>
