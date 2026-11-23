@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">让 Inni 开口说话</title>
+  <desc id="desc">Qwen3 与 LoRA 生成角色回复，GPT-SoVITS 合成语音，Live2D 呈现桌面角色与动作。</desc>
+  <defs>
+    <linearGradient id="bg" x2="1" y2="1"><stop stop-color="#161525"/><stop offset="1" stop-color="#27203b"/></linearGradient>
+    <linearGradient id="wave" x2="1"><stop stop-color="#c3a9f5"/><stop offset="1" stop-color="#f1c68c"/></linearGradient>
+    <pattern id="dots" width="32" height="32" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1" fill="#e9dff9" opacity=".08"/></pattern>
+  </defs>
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <rect width="1600" height="900" fill="url(#dots)"/>
+  <circle cx="1380" cy="150" r="350" fill="#b998e4" opacity=".04"/>
+  <circle cx="1380" cy="150" r="270" fill="none" stroke="#cdb8ed" opacity=".12"/>
+  <circle cx="1380" cy="150" r="190" fill="none" stroke="#cdb8ed" opacity=".12"/>
+  <g font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC',sans-serif">
+    <text x="112" y="130" fill="#c4addf" font-size="24" letter-spacing="6">INNI · DEV NOTES</text>
+    <text x="108" y="285" fill="#fff4e8" font-size="86" font-weight="700">让 Inni 开口说话</text>
+    <text x="114" y="353" fill="#c6bed5" font-size="31">从角色微调到本地语音</text>
+    <path d="M112 453 H235 M255 431 V475 M277 411 V495 M299 389 V517 M321 414 V492 M343 439 V467 M365 421 V485 M387 382 V524 M409 408 V498 M431 427 V479 M453 441 V465 M475 419 V487 M497 397 V509 M519 423 V483 M541 438 V468 M563 448 H665" stroke="url(#wave)" stroke-width="9" stroke-linecap="round"/>
+    <text x="730" y="462" fill="#a49ab8" font-size="24" letter-spacing="3">TEXT → VOICE → MOTION</text>
+    <g stroke="#665576" fill="#201d30">
+      <rect x="112" y="604" width="400" height="174" rx="24"/>
+      <rect x="600" y="604" width="400" height="174" rx="24"/>
+      <rect x="1088" y="604" width="400" height="174" rx="24"/>
+    </g>
+    <g fill="#bfa6dc" font-size="22"><text x="146" y="654">01 / 角色回复</text><text x="634" y="654">02 / 合成声音</text><text x="1122" y="654">03 / 桌面表现</text></g>
+    <g fill="#fff0df" font-size="35" font-weight="600"><text x="146" y="724">Qwen3 + LoRA</text><text x="634" y="724">GPT-SoVITS</text><text x="1122" y="724">Live2D</text></g>
+    <path d="M532 691 H575 M565 681 L575 691 L565 701 M1020 691 H1063 M1053 681 L1063 691 L1053 701" fill="none" stroke="#a991c4" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="1488" y="840" text-anchor="end" fill="#a397b4" font-size="20" letter-spacing="2">SWRITED</text>
+  </g>
+</svg>
